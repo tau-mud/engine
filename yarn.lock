@@ -1638,6 +1638,11 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
+"@types/lodash@^4.14.191":
+  version "4.14.191"
+  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.191.tgz#09511e7f7cba275acd8b419ddac8da9a6a79e2fa"
+  integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
+
 "@types/minimatch@^3.0.3":
   version "3.0.5"
   resolved "https://registry.npmjs.org/@types/minimatch/-/minimatch-3.0.5.tgz"
@@ -4313,7 +4318,7 @@ modify-values@^1.0.0:
 "moleculer-telnet@file:../moleculer-telnet":
   version "0.1.0"
   dependencies:
-    moleculer-tcp "file:../../Library/Caches/Yarn/v6/npm-moleculer-telnet-0.1.0-1ef9fda6-b439-457b-a01f-3cce3484d2ba-1673764613706/node_modules/moleculer-tcp"
+    moleculer-tcp "file:../../Library/Caches/Yarn/v6/npm-moleculer-telnet-0.1.0-1266025c-b1b6-4315-8e50-b73de79e8885-1673819318469/node_modules/moleculer-tcp"
 
 moleculer@^0.14.27, moleculer@^0.14.28:
   version "0.14.28"

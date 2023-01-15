@@ -1,4 +1,5 @@
 import { BrokerOptions } from "moleculer";
+import { defaultsDeep } from "lodash";
 
 /**
  * Configuration options for the Tau MUD Engine.
@@ -21,12 +22,13 @@ export interface IConfig extends BrokerOptions {
  */
 export function Configure(
   config: Partial<IConfig>,
-  baseConfig: Partial<IConfig>
+  baseConfig: Partial<IConfig> = {}
 ): BrokerOptions {
-  return {
-    // the node id is the process name + the process id
-    nodeID: `${config.processName}-${process.pid}`,
-    ...baseConfig,
-    ...config,
-  };
+  return defaultsDeep(
+    {
+      ...config,
+      nodeID: `${config.processName}-${process.pid}`,
+    },
+    baseConfig
+  );
 }

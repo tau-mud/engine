@@ -6,6 +6,9 @@
   "author": "fugu@hey.com",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "watch": "lerna exec --parallel --scope @tau-mud/* -- yarn watch"
+  },
   "devDependencies": {
     "lerna": "^6.4.1",
     "prettier": "^2.8.3"
