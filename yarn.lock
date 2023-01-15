@@ -4304,7 +4304,18 @@ modify-values@^1.0.0:
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz"
   integrity sha512-xV2bxeN6F7oYjZWTe/YPAy6MN2M+sL4u/Rlm2AHCIVGfo2p1yGmBHQ6vHehl4bRTZBdHu3TSkWdYgkwpYzAGSw==
 
-moleculer@^0.14.28:
+"moleculer-tcp@file:../moleculer-tcp":
+  version "0.1.0"
+  dependencies:
+    moleculer "^0.14.27"
+    uuid "^9.0.0"
+
+"moleculer-telnet@file:../moleculer-telnet":
+  version "0.1.0"
+  dependencies:
+    moleculer-tcp "file:../../Library/Caches/Yarn/v6/npm-moleculer-telnet-0.1.0-1ef9fda6-b439-457b-a01f-3cce3484d2ba-1673764613706/node_modules/moleculer-tcp"
+
+moleculer@^0.14.27, moleculer@^0.14.28:
   version "0.14.28"
   resolved "https://registry.npmjs.org/moleculer/-/moleculer-0.14.28.tgz#c0abf0bd20b09fca9d0457bac1b74be040fb6ab0"
   integrity sha512-HTOtejMpb14oBtW0kKVoYLK6MgZA4NdPEppOf69yJhF1qlqXRGujAXE2ij2wWyXJNf31l84ZZRh+xXXQmRJaOQ==
@@ -5710,6 +5721,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.npmjs.org/uuid/-/uuid-8.3.2.tgz"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 v8-compile-cache@2.3.0:
   version "2.3.0"
