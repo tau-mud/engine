@@ -1,0 +1,18 @@
+{
+  "name": "build-configs",
+  "version": "0.0.0",
+  "description": "Build Configs",
+  "author": "fugufish <fugu@hey.com>",
+  "homepage": "",
+  "license": "MIT",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "tsconfig.base.json"
+  ],
+  "scripts": {
+    "test": "node ./__tests__/tsconfig.test.js"
+  }
+}

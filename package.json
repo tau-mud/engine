@@ -1,15 +1,16 @@
 {
-  "name": "@tau-mud",
+  "name": "tau-mud",
   "version": "0.0.0",
+  "description": "Tau MUD Engine",
+  "repository": "https://github.com/tau-mud/tau-mud",
+  "author": "fugu@hey.com",
   "license": "MIT",
-  "scripts": {},
   "private": true,
-  "dependencies": {},
   "devDependencies": {
-    "@nrwl/js": "15.5.1",
-    "@nrwl/workspace": "15.5.1",
-    "nx": "15.5.1",
-    "prettier": "^2.6.2",
-    "typescript": "~4.8.2"
-  }
+    "lerna": "^6.4.1",
+    "prettier": "^2.8.3"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }
