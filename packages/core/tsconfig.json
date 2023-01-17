@@ -4,9 +4,6 @@
     "outDir": "./lib",
     "rootDir": "./src",
     "baseUrl": "./src",
-    "paths": {
-      "@/*": ["*"]
-    }
   },
   "exclude": [
     "node_modules",

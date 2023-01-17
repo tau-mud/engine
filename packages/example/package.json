@@ -23,5 +23,8 @@
   "dependencies": {
     "@tau-mud/core": "*",
     "@tau-mud/portal": "*"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.2"
   }
 }

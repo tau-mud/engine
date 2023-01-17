@@ -1,9 +1,4 @@
-import {
-  Context,
-  Service,
-  ServiceSchema,
-  ServiceSettingSchema,
-} from "moleculer";
+import { Context, ServiceSchema, ServiceSettingSchema } from "moleculer";
 import { service } from "@tau-mud/core";
 /**
  * Represents the basic settings for a Portal service
@@ -47,7 +42,7 @@ export type TPortalServiceSchema = ServiceSchema<TPortalSettingsSchema>;
  * | ---- | ------ | ------- | ----------- | ------------ |
  * | send | {@link TSendActionParams} | `Promise<void>` | The send action is called to send data to the client. | Yes |
  **/
-export class Portal extends Service {
+export class Portal extends service.Service {
   name = "portal";
 
   @service.Action({

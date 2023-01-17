@@ -1,5 +1,5 @@
 import { Configure } from "./Configure";
-import { ServiceFactory } from "@/service";
+import { ServiceFactory } from "../service";
 import { get } from "lodash";
 
 describe("Configure", () => {
@@ -21,6 +21,9 @@ describe("Configure", () => {
       expect(get(config, "logger.options.formatter")).toEqual("full");
       expect(get(config, "logger.options.objectPrinter")).toEqual(null);
       expect(get(config, "logger.options.autoPadding")).toEqual(false);
+      expect(config.created).toBeDefined();
+      expect(config.started).toBeDefined();
+      expect(config.stopped).toBeDefined();
     });
   });
 

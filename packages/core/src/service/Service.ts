@@ -6,46 +6,46 @@ import {
   ServiceBroker,
   ServiceMethods,
   ServiceSchema,
-} from 'moleculer';
+} from "moleculer";
 
 const blacklist = [
-  '_init',
-  '_start',
-  '_stop',
-  'created',
-  'started',
-  'actions',
-  'events',
-  'methods',
-  'metadata',
-  'broker',
-  'Promise',
-  'constructor',
-  'logger',
-  'schema',
-  'fullName',
-  '_serviceSpecification',
-  'version',
-  'originalSchema',
-  '_getPublicSettings',
-  '_createAction',
-  '_createMethod',
-  '_createEvent',
-  'applyMixins',
-  'mergeSchemas',
-  'mergeSchemaSettings',
-  'mergeSchemaMetadata',
-  'parseServiceSchema',
-  'mergeSchemaUniqArray',
+  "_init",
+  "_start",
+  "_stop",
+  "created",
+  "started",
+  "actions",
+  "events",
+  "methods",
+  "metadata",
+  "broker",
+  "Promise",
+  "constructor",
+  "logger",
+  "schema",
+  "fullName",
+  "_serviceSpecification",
+  "version",
+  "originalSchema",
+  "_getPublicSettings",
+  "_createAction",
+  "_createMethod",
+  "_createEvent",
+  "applyMixins",
+  "mergeSchemas",
+  "mergeSchemaSettings",
+  "mergeSchemaMetadata",
+  "parseServiceSchema",
+  "mergeSchemaUniqArray",
   `mergeSchemaDependencies`,
-  'mergeSchemaHooks',
-  'mergeSchemaMethods',
-  'mergeSchemaEvents',
-  'mergeSchemaActions',
-  'mergeSchemaLifecycleHandlers',
-  'mergeSchemaUnknown',
-  'emitLocalEventHandler',
-  'waitForServices',
+  "mergeSchemaHooks",
+  "mergeSchemaMethods",
+  "mergeSchemaEvents",
+  "mergeSchemaActions",
+  "mergeSchemaLifecycleHandlers",
+  "mergeSchemaUnknown",
+  "emitLocalEventHandler",
+  "waitForServices",
 ];
 
 /**
@@ -69,9 +69,12 @@ export class Service extends MoleculerService {
 export class ServiceFactory extends MoleculerService {
   constructor(
     broker: ServiceBroker,
-    service: MoleculerService | typeof Service
+    service: MoleculerService | typeof Service | ServiceSchema
   ) {
-    if (Object.prototype.isPrototypeOf.call(Service, service)) {
+    if (
+      Object.prototype.isPrototypeOf.call(Service, service) ||
+      service instanceof MoleculerService
+    ) {
       let svc: Service;
 
       if (Object.prototype.isPrototypeOf.call(Service, service)) {
@@ -87,7 +90,7 @@ export class ServiceFactory extends MoleculerService {
           Object.keys(svc)
             .filter((key) => !blacklist.includes(key))
             .forEach((key) => {
-              if (typeof svc[key] !== 'function') {
+              if (typeof svc[key] !== "function") {
                 this[key] = svc[key];
               }
             });
@@ -115,8 +118,8 @@ export class ServiceFactory extends MoleculerService {
       const schema: ServiceSchema = {
         name: svc.name,
         mixins: mixins,
-        started: svc['started'],
-        created: svc['created'],
+        started: svc["started"],
+        created: svc["created"],
         actions: actionsFor(svc),
         events: eventsFor(svc),
         methods: methodsFor(svc),
@@ -143,7 +146,7 @@ function* iterMethods(
   if (!o || o === Object.prototype) return;
   for (const name of Object.getOwnPropertyNames(o)) {
     try {
-      if (name !== 'constructor' && typeof o[name] === 'function') {
+      if (name !== "constructor" && typeof o[name] === "function") {
         yield {
           name,
           fun: o[name],
@@ -162,7 +165,7 @@ function actionsFor(service: Service) {
   Array.from(iterMethods(Object.getPrototypeOf(service)))
     .filter((desc: FunctionDescriptor) => !blacklist.includes(desc.name))
     .forEach((desc: FunctionDescriptor) => {
-      const action = Reflect.getMetadata('moleculer:action', desc.fun);
+      const action = Reflect.getMetadata("moleculer:action", desc.fun);
 
       if (action) {
         actions[action.name || desc.name] = {
@@ -181,13 +184,13 @@ function eventsFor(service: Service) {
   Array.from(iterMethods(Object.getPrototypeOf(service)))
     .filter((desc: FunctionDescriptor) => !blacklist.includes(desc.name))
     .forEach((desc: FunctionDescriptor) => {
-      let event = Reflect.getMetadata('moleculer:event', desc.fun);
+      let event = Reflect.getMetadata("moleculer:event", desc.fun);
 
       if (event) {
-        if (typeof event === 'function') {
+        if (typeof event === "function") {
           event = event(service);
 
-          if (typeof event === 'string') {
+          if (typeof event === "string") {
             event = {
               name: event,
             };
@@ -210,8 +213,8 @@ function methodsFor(service: Service) {
     .filter((desc: FunctionDescriptor) => !blacklist.includes(desc.name))
     .forEach((desc: FunctionDescriptor) => {
       const notMethod =
-        Reflect.getMetadata('moleculer:action', desc.fun) ||
-        Reflect.getMetadata('moleculer:event', desc.fun);
+        Reflect.getMetadata("moleculer:action", desc.fun) ||
+        Reflect.getMetadata("moleculer:event", desc.fun);
 
       if (notMethod) {
         return;

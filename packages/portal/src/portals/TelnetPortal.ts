@@ -1,7 +1,7 @@
 import MoleculerTelnet, {
   IMoleculerTCPHandleDataParams,
 } from "moleculer-telnet";
-import { Context, Service } from "moleculer";
+import { Context } from "moleculer";
 import { service } from "@tau-mud/core";
 
 import { Portal } from "./Portal";
@@ -11,7 +11,7 @@ import { Portal } from "./Portal";
  * TelnetPortal supports multiple Telnet based protocols including full unicode and [NAWS](https://tools.ietf.org/html/rfc1073).
  * support.
  */
-export class TelnetPortal extends Service {
+export class TelnetPortal extends service.Service {
   name = "telnet-portal";
   mixins = [MoleculerTelnet, Portal];
 
@@ -20,7 +20,7 @@ export class TelnetPortal extends Service {
     port: process.env.TAU_TELNET_PORT || 2323,
     ttype: true,
     charset: true,
-    async afterConnect(this: Service, id: string): Promise<void> {
+    async afterConnect(this: service.Service, id: string): Promise<void> {
       try {
         return this.broker.call("session-manager.register", {
           id,
@@ -36,8 +36,11 @@ export class TelnetPortal extends Service {
     },
   };
   @service.Action()
-  handleData(ctx: Context<IMoleculerTCPHandleDataParams>): Promise<void> {
-    return this.receiveFromConnection(ctx.params.id, ctx.params.data);
+  handleData(ctx: Context<IMoleculerTCPHandleDataParams>): Promise<unknown> {
+    return this.receiveFromConnection(
+      ctx.params.id,
+      ctx.params.data.toString()
+    );
   }
 
   @service.Action()
