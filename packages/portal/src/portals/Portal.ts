@@ -1,5 +1,10 @@
-import { Context, ServiceSchema, ServiceSettingSchema } from "moleculer";
+import Moleculer, {
+  Context,
+  ServiceSchema,
+  ServiceSettingSchema,
+} from "moleculer";
 import { service } from "@tau-mud/core";
+import MoleculerError = Moleculer.Errors.MoleculerError;
 /**
  * Represents the basic settings for a Portal service
  */
@@ -35,7 +40,7 @@ export type TPortalServiceSchema = ServiceSchema<TPortalSettingsSchema>;
  * a valid portal service. To implement a portal, it must call `this.registerSession` when a new connection is
  * established, and `this.remove` when a connection is closed.
  *
- * When a connection receives data, it should call `this.receiveFromConnection`.
+ * When a connection receives data, it should call the `session-manager.receive` action.
  *
  * #### Actions
  * | Name | Params | Returns | Description | Overrideable |
@@ -52,19 +57,6 @@ export class Portal extends service.Service {
     },
   })
   send(ctx: Context<TSendActionParams>) {
-    throw new Error("Not implemented");
-  }
-  async registerSession(id: string) {
-    return this.broker.call("session-manager.register", {
-      id,
-      portal: this.name,
-    });
-  }
-  async removeSession(id: string) {
-    return this.broker.call("session-manager.remove", { id });
-  }
-  async sendToConnection(id: string, data: string) {}
-  async receiveFromConnection(id: string, data: string) {
-    return this.broker.call("session-manager.receive", { id, data });
+    throw new MoleculerError("Not implemented");
   }
 }

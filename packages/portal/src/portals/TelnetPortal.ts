@@ -35,12 +35,13 @@ export class TelnetPortal extends service.Service {
       }
     },
   };
+
   @service.Action()
   handleData(ctx: Context<IMoleculerTCPHandleDataParams>): Promise<unknown> {
-    return this.receiveFromConnection(
-      ctx.params.id,
-      ctx.params.data.toString()
-    );
+    return this.broker.call("session-manager.receive", {
+      id: ctx.params.id,
+      data: ctx.params.data.toString(),
+    });
   }
 
   @service.Action()
