@@ -74,8 +74,22 @@ export function Configure(
           broker.logger.info(`Loading plugin '${plugin.name}'`);
 
           if (plugin.created) {
-            this.logger.info(`Calling 'created' for plugin '${plugin.name}'`);
+            broker.logger.info(`Calling 'created' for plugin '${plugin.name}'`);
             plugin.created(broker);
+          }
+        });
+      },
+
+      started(broker: ServiceBroker) {
+        const options: IConfig = <IConfig>broker.options;
+
+        const plugins = options.plugins || [];
+        broker.logger.info(`calling 'started' for ${plugins.length} plugins`);
+
+        plugins.forEach((plugin: Plugin) => {
+          broker.logger.info(`Calling 'started' for plugin '${plugin.name}'`);
+          if (plugin.started) {
+            plugin.started(broker);
           }
 
           if (plugin.services && options.processName) {
@@ -94,20 +108,6 @@ export function Configure(
             broker.logger.fatal(`No process name provided.`);
 
             process.exit(1);
-          }
-        });
-      },
-
-      started(broker: ServiceBroker) {
-        const options: IConfig = <IConfig>broker.options;
-
-        const plugins = options.plugins || [];
-        broker.logger.info(`calling 'started' for ${plugins.length} plugins`);
-
-        plugins.forEach((plugin: Plugin) => {
-          broker.logger.info(`Calling 'started' for plugin '${plugin.name}'`);
-          if (plugin.started) {
-            plugin.started(broker);
           }
         });
       },

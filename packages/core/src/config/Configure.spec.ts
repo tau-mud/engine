@@ -1,6 +1,8 @@
-import { Configure } from "./Configure";
+import { Configure, IConfig } from "./Configure";
 import { ServiceFactory } from "../service";
 import { get } from "lodash";
+import { Plugin } from "../Plugin";
+import { ServiceBroker } from "moleculer";
 
 describe("Configure", () => {
   describe("defaults", () => {
@@ -64,6 +66,49 @@ describe("Configure", () => {
       expect(config.namespace).toEqual("test");
       expect(get(config, "logger.options.level")).toEqual("trace");
       expect(config.transporter).toEqual("nats");
+    });
+  });
+
+  describe("configuration calls created plugins", () => {
+    class MockPlugin extends Plugin {
+      readonly name = "mock";
+
+      created = jest.fn();
+      started = jest.fn();
+      stopped = jest.fn();
+    }
+
+    let config: IConfig;
+    let broker: ServiceBroker;
+
+    beforeEach(() => {
+      const mockPlugin = new MockPlugin();
+      config = Configure(
+        {
+          processName: "test",
+        },
+        {
+          // logger: false,
+          plugins: [mockPlugin],
+        }
+      );
+      broker = new ServiceBroker(config);
+    });
+
+    it("should call created", () => {
+      expect(config.plugins[0].created).toHaveBeenCalled();
+    });
+
+    it("should call started", async () => {
+      await broker.start();
+      expect(config.plugins[0].started).toHaveBeenCalled();
+      await broker.stop();
+    });
+
+    it("should call stopped", async () => {
+      await broker.start();
+      await broker.stop();
+      expect(config.plugins[0].stopped).toHaveBeenCalled();
     });
   });
 });
