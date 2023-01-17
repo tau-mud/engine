@@ -1,5 +1,5 @@
 import { Configure, IConfig } from "./Configure";
-import { ServiceFactory } from "../service";
+import { ServiceFactory, Service } from "../service";
 import { get } from "lodash";
 import { Plugin } from "../Plugin";
 import { ServiceBroker } from "moleculer";
@@ -70,8 +70,15 @@ describe("Configure", () => {
   });
 
   describe("configuration calls created plugins", () => {
+    class MockService extends Service {
+      public name = "mock";
+    }
+
     class MockPlugin extends Plugin {
       readonly name = "mock";
+      readonly services = {
+        all: [MockService],
+      };
 
       created = jest.fn();
       started = jest.fn();
@@ -88,7 +95,7 @@ describe("Configure", () => {
           processName: "test",
         },
         {
-          // logger: false,
+          logger: false,
           plugins: [mockPlugin],
         }
       );
@@ -109,6 +116,16 @@ describe("Configure", () => {
       await broker.start();
       await broker.stop();
       expect(config.plugins[0].stopped).toHaveBeenCalled();
+    });
+
+    it("should start services", async () => {
+      await broker.start();
+      await broker.waitForServices("mock");
+
+      const service = broker.getLocalService("mock");
+      expect(service).toBeDefined();
+
+      await broker.stop();
     });
   });
 });
