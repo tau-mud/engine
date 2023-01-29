@@ -1,6 +1,6 @@
 import { config } from "@tau-mud/core";
 import { ServiceBroker } from "moleculer";
-import { Portal } from "./Portal";
+import { PortalMixin } from "./PortalMixin";
 
 describe("Portal", () => {
   let broker: ServiceBroker;
@@ -14,7 +14,7 @@ describe("Portal", () => {
     broker = new ServiceBroker(cfg);
 
     await broker.start();
-    await broker.createService(Portal);
+    await broker.createService(PortalMixin);
     await broker.waitForServices("portal");
   });
 
