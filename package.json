@@ -7,15 +7,18 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "docs:start": "cd docs && yarn start",
-    "docs:serve": "cd docs && yarn serve",
-    "watch": "lerna exec --parallel --scope @tau-mud/* -- yarn watch"
+    "docs:watch": "nodemon --watch packages --ext ts,tsx --exec \"typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --theme github-wiki --entryDocument ./README.md --out wiki/api --entryPointStrategy packages --exclude *.spect.ts --excludePrivate true --entryPoints packages/core\"",
+    "packages:watch": "lerna exec --parallel --scope @tau-mud/* -- yarn watch"
   },
   "devDependencies": {
     "ioredis": "^5.3.0",
     "lerna": "^6.4.1",
     "moleculer-cli": "^0.8.1",
-    "prettier": "^2.8.3"
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.3",
+    "typedoc": "^0.23.24",
+    "typedoc-github-wiki-theme": "^1.0.1",
+    "typedoc-plugin-markdown": "^3.14.0"
   },
   "workspaces": [
     "packages/*"
