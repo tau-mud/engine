@@ -1,1 +1,1 @@
-export * from "./ConnectionsRegistry";
+export * from "./Connections";

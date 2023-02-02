@@ -1,12 +1,12 @@
 import React, { createContext, ProviderProps } from "react";
-import { IControllerConnectionContext } from "../mixins/ControllerMixin";
+import { IControllerConnectionData } from "../types";
 
-const defaultConnection: Partial<IControllerConnectionContext> = {};
+const defaultConnection: Partial<IControllerConnectionData> = {};
 
 export const ConnectionContext = createContext(defaultConnection);
 
 export const WithConnection = (
-  conn: IControllerConnectionContext,
+  conn: IControllerConnectionData,
   template: React.ReactElement
 ) => {
   return (

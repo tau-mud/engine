@@ -1,6 +1,6 @@
 import { config, Plugin } from "@tau-mud/core";
 import { TelnetPortal } from "./portals";
-import { ConnectionsRegistry } from "./services";
+import { Connections } from "./services";
 
 /**
  * The PortalPlugin is a plugin that provides a method by which players can connect to the MUD. It provides a base mixin
@@ -8,7 +8,10 @@ import { ConnectionsRegistry } from "./services";
  */
 export class PortalPlugin extends Plugin {
   readonly name = "portal";
-  readonly services: config.TServiceList = {
-    portal: [TelnetPortal, ConnectionsRegistry],
+  readonly services = {
+    portal: {
+      TelnetPortal,
+      Connections,
+    },
   };
 }

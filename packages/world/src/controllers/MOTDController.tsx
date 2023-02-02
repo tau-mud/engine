@@ -1,15 +1,11 @@
 import React from "react";
 
-import { ITauServiceSchema } from "@tau-mud/core";
-import {
-  ControllerMixin,
-  IActionParams,
-  IControllerContext,
-} from "../mixins/ControllerMixin";
-import { Box, Text } from "../screen";
-import { GameName } from "../screen/GameName";
+import { ControllerMixin } from "../mixins";
+import { Box, Text, GameName } from "../screen";
+import { types } from "@tau-mud/core";
+import { IControllerActionParams, IControllerContext } from "../types";
 
-export const MOTDController: ITauServiceSchema = {
+export const MOTDController: types.ITauServiceSchema = {
   name: "controllers.motd",
   mixins: [ControllerMixin],
   templates: {
@@ -26,7 +22,7 @@ export const MOTDController: ITauServiceSchema = {
     },
   },
   actions: {
-    async start(ctx: IControllerContext<IActionParams>) {
+    async start(ctx: IControllerContext<IControllerActionParams>) {
       // wait a second so negotiations can complete
       await new Promise((resolve) => setTimeout(resolve, 1000));
 

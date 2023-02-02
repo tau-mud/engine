@@ -1,32 +1,15 @@
-import { ITauServiceSchema, ServiceMixin } from "@tau-mud/core";
+import { types, mixins } from "@tau-mud/core";
 import { Context, Errors, Service } from "moleculer";
 import EventEmitter from "events";
 import { render } from "ink";
-import { WithConnection } from "../screen/WithConnection";
-import { WithTheme } from "../screen/WithTheme";
-
-export interface IControllerConnectionContext {
-  id: string;
-  portal: string;
-  [key: string]: any;
-}
-
-export interface IActionParams {
-  id: string;
-}
-
-export interface ISendActionParams extends IActionParams {
-  data: string;
-}
-
-export interface IRenderActionParams extends IActionParams {
-  template: string;
-  props: any;
-}
-
-export interface IControllerContext<P> extends Context<P> {
-  connection?: IControllerConnectionContext;
-}
+import { WithConnection, WithTheme } from "../screen";
+import {
+  IControllerActionParams,
+  IControllerConnectionData,
+  IControllerContext,
+  IControllerRenderActionParams,
+  IControllerSendActionParams,
+} from "../types";
 
 class InkBuffer extends EventEmitter {
   readonly columns: number;
@@ -47,17 +30,21 @@ class InkBuffer extends EventEmitter {
     return this.content;
   }
 }
-export const ControllerMixin: ITauServiceSchema = {
+
+export const ControllerMixin: types.ITauServiceSchema = {
   name: "controller",
-  mixins: [ServiceMixin],
+  mixins: [mixins.Service],
   hooks: {
     before: {
-      async "*"(this: Service, ctx: IControllerContext<IActionParams>) {
+      async "*"(
+        this: Service,
+        ctx: IControllerContext<IControllerActionParams>
+      ) {
         const connection = await ctx.call(`connections.getAllMetadata`, {
           id: ctx.params.id,
         });
 
-        ctx.connection = <IControllerConnectionContext>connection;
+        ctx.connection = <IControllerConnectionData>connection;
       },
     },
   },
@@ -113,9 +100,9 @@ export const ControllerMixin: ITauServiceSchema = {
         data: "string",
       },
       visibility: "protected",
-      async handler(ctx: IControllerContext<ISendActionParams>) {
-        const connection: IControllerConnectionContext = <
-          IControllerConnectionContext
+      async handler(ctx: IControllerContext<IControllerSendActionParams>) {
+        const connection: IControllerConnectionData = <
+          IControllerConnectionData
         >ctx.connection;
 
         return ctx.call(`connections.write`, {
@@ -135,7 +122,7 @@ export const ControllerMixin: ITauServiceSchema = {
         },
       },
       visibility: "protected",
-      async handler(ctx: IControllerContext<IRenderActionParams>) {
+      async handler(ctx: IControllerContext<IControllerRenderActionParams>) {
         const templates = this.originalSchema.templates;
 
         if (!templates) {
@@ -156,8 +143,8 @@ export const ControllerMixin: ITauServiceSchema = {
           );
         }
 
-        const connection: IControllerConnectionContext = <
-          IControllerConnectionContext
+        const connection: IControllerConnectionData = <
+          IControllerConnectionData
         >ctx.connection;
 
         const buffer = new InkBuffer(

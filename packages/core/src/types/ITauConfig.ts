@@ -16,5 +16,5 @@ export interface ITauConfig extends BrokerOptions {
    */
   plugins: Array<typeof Plugin>;
 
-  settings?: IMudSettings;
+  settings?: Partial<IMudSettings>;
 }

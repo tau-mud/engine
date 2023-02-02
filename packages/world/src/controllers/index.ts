@@ -1,4 +1,2 @@
-import { MOTDController } from "./MOTDController";
-import { LoginController } from "./LoginController";
-
-export const controllers = [MOTDController, LoginController];
+export * from "./MOTDController";
+export * from "./LoginController";

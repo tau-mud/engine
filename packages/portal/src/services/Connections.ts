@@ -1,26 +1,20 @@
-import { ITauServiceSchema } from "@tau-mud/core";
-import {
-  IConnectionActionParams,
-  IDeleteMetadataActionParams,
-  IGetMetadataActionParams,
-  IMergeMetadataActionParams,
-  ISetControllerActionParams,
-  IWriteActionParams,
-} from "../PortalMixin";
+import { types } from "@tau-mud/core";
 import { Context } from "moleculer";
-
-/**
- * The params for the `registerConnection` action.
- */
-interface IRegisterConnectionParams extends IConnectionActionParams {
-  portal: string;
-}
+import {
+  IConnectionsRegisterConnectionActionParams,
+  IPortalDeleteMetadataActionParams,
+  IPortalGetMetadataActionParams,
+  IPortalMergeMetadataActionParams,
+  IPortalSetControllerActionParams,
+  IPortalSetMetadataActionParams,
+  IPortalWriteActionParams,
+} from "types";
 
 /**
  * The ConnectionRegistry service is responsible for simply tracking connections across all portals, providing a common
  * service to access connection metadata so that the portal for each connection does not need to be known by the world.
  */
-export const ConnectionsRegistry: ITauServiceSchema = {
+export const Connections: types.ITauServiceSchema = {
   actions: {
     register: {
       params: {
@@ -28,7 +22,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         portal: "string",
       },
       privacy: "protected",
-      handler(ctx: Context<IRegisterConnectionParams>) {
+      handler(ctx: Context<IConnectionsRegisterConnectionActionParams>) {
         this.logger.debug("registering connection", ctx.params);
         const { id, portal } = ctx.params;
 
@@ -41,7 +35,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         key: "string",
       },
-      handler(ctx: Context<IGetMetadataActionParams>) {
+      handler(ctx: Context<IPortalGetMetadataActionParams>) {
         const { id, key } = ctx.params;
 
         const portal = this.connections[id];
@@ -54,7 +48,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
       params: {
         id: "string",
       },
-      handler(ctx: Context<IGetMetadataActionParams>) {
+      handler(ctx: Context<IPortalGetMetadataActionParams>) {
         const { id } = ctx.params;
 
         const portal = this.connections[id];
@@ -67,7 +61,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
       params: {
         id: "string",
       },
-      handler(ctx: Context<IGetMetadataActionParams>) {
+      handler(ctx: Context<IPortalSetMetadataActionParams>) {
         const { id } = ctx.params;
 
         const portal = this.connections[id];
@@ -81,7 +75,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         key: "string",
       },
-      handler(ctx: Context<IDeleteMetadataActionParams>) {
+      handler(ctx: Context<IPortalDeleteMetadataActionParams>) {
         const { id, key } = ctx.params;
 
         const portal = this.connections[id];
@@ -95,7 +89,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         data: "object",
       },
-      handler(ctx: Context<IMergeMetadataActionParams>) {
+      handler(ctx: Context<IPortalMergeMetadataActionParams>) {
         const { id, data } = ctx.params;
 
         const portal = this.connections[id];
@@ -109,7 +103,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         data: "string",
       },
-      handler(ctx: Context<IWriteActionParams>) {
+      handler(ctx: Context<IPortalWriteActionParams>) {
         const { id, data } = ctx.params;
 
         const portal = this.connections[id];
@@ -123,7 +117,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         data: "string",
       },
-      handler(ctx: Context<IWriteActionParams>) {
+      handler(ctx: Context<IPortalWriteActionParams>) {
         const { id, data } = ctx.params;
 
         const portal = this.connections[id];
@@ -137,7 +131,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         controller: "string",
       },
-      handler(ctx: Context<ISetControllerActionParams>) {
+      handler(ctx: Context<IPortalSetControllerActionParams>) {
         const { id, controller } = ctx.params;
 
         const portal = this.connections[id];
@@ -151,7 +145,7 @@ export const ConnectionsRegistry: ITauServiceSchema = {
         id: "string",
         data: "array",
       },
-      handler(ctx: Context<IWriteActionParams>) {
+      handler(ctx: Context<IPortalWriteActionParams>) {
         const { id, data } = ctx.params;
 
         const portal = this.connections[id];

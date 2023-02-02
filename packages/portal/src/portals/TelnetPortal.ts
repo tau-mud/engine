@@ -1,16 +1,20 @@
 import { MoleculerTelnet } from "moleculer-telnet";
 
 import {
-  PortalMixin,
   IPortalServiceSchema,
-  IConnectionActionParams,
-  IWriteActionParams,
-  IOnDataActionParams,
-} from "../PortalMixin";
-import { ISettings } from "@tau-mud/core/lib/config";
-import { get } from "lodash";
-import { Context } from "moleculer";
+  IPortalActionParams,
+  IPortalWriteActionParams,
+  IPortalOnDataActionParams,
+  TPortalServiceConstructor,
+  IPortalSettings,
+} from "../types";
 
+import { PortalMixin } from "../mixins";
+import { get } from "lodash";
+import { Context, Service } from "moleculer";
+import { types } from "@tau-mud/core";
+
+// @ts-ignore
 /**
  * The TelnetPortal is a portal that allows players to connect to the MUD via telnet. The TelnetPortal utilizes the
  * [moleculer-telnet](https://github.com/fugufish/moleculer-telnet) mixin to provide the telnet functionality.
@@ -23,22 +27,24 @@ import { Context } from "moleculer";
  * | `ttype` | `true` | `telnet.ttype` | Whether to send the telnet terminal type. |
  * | `charset` | `UTF-8` | `telnet.charset` | The charset to send to the client. |
  */
-export const TelnetPortal: IPortalServiceSchema = {
+export const TelnetPortal: TPortalServiceConstructor = (
+  mudSettings: Partial<IPortalSettings>
+): IPortalServiceSchema => ({
   name: "telnet-portal",
   mixins: [MoleculerTelnet, PortalMixin],
 
-  settings(mudSettings: ISettings): ISettings {
-    return {
-      host: get(mudSettings, "telnet.host", "127.0.0.1"),
-      port: get(mudSettings, "telnet.port", 2323),
-      ttype: get(mudSettings, "telnet.ttype", true),
-      charset: get(mudSettings, "telnet.charset", "UTF-8"),
-    };
+  settings: {
+    host: get(mudSettings, "telnet.host", "127.0.0.1"),
+    port: get(mudSettings, "telnet.port", 2323),
+    ttype: get(mudSettings, "telnet.ttype", true),
+    charset: get(mudSettings, "telnet.charset", "UTF-8"),
   },
 
+  // we can ignore this because the metadata actions are mixed in from teh MoleculerTelnet mixin
+  // @ts-ignore
   actions: {
     write: {
-      handler(ctx: Context<IWriteActionParams>) {
+      handler(this: Service, ctx: Context<IPortalWriteActionParams>) {
         const { id, data } = ctx.params;
 
         return this.actions.socketWrite({ id, data: ctx.params.data });
@@ -47,7 +53,7 @@ export const TelnetPortal: IPortalServiceSchema = {
 
     onSocketData: {
       hooks: {
-        after(ctx: Context<IOnDataActionParams>) {
+        after(this: Service, ctx: Context<IPortalOnDataActionParams>) {
           return this.actions.onData({
             id: ctx.params.id,
             data: ctx.params.data,
@@ -55,18 +61,10 @@ export const TelnetPortal: IPortalServiceSchema = {
         },
       },
     },
-    //
-    // onServerConnection: {
-    //   hooks: {
-    //     async after(ctx: Context<IConnectionActionParams>) {
-    //       return this.actions.onConnect({ id: ctx.params.id });
-    //     },
-    //   },
-    // },
 
     onSocketClose: {
       hooks: {
-        async after(ctx: Context<IConnectionActionParams>) {
+        async after(this: Service, ctx: Context<IPortalActionParams>) {
           return this.actions.onDisconnect({ id: ctx.params.id });
         },
       },
@@ -74,7 +72,7 @@ export const TelnetPortal: IPortalServiceSchema = {
 
     onSocketTelnetNegotiationsComplete: {
       hooks: {
-        async after(ctx: Context<IConnectionActionParams>) {
+        async after(this: Service, ctx: Context<IPortalActionParams>) {
           return this.actions.onConnect({ id: ctx.params.id });
         },
       },
@@ -82,10 +80,10 @@ export const TelnetPortal: IPortalServiceSchema = {
 
     onSocketTimeout: {
       hooks: {
-        async after(ctx: Context<IConnectionActionParams>) {
+        async after(this: Service, ctx: Context<IPortalActionParams>) {
           return this.actions.onTimeout({ id: ctx.params.id });
         },
       },
     },
   },
-};
+});

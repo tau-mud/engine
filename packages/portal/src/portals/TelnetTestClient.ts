@@ -1,7 +1,7 @@
 import EventEmitter from "events";
 import { Socket } from "net";
 import { COMMANDS, OPTIONS } from "moleculer-telnet";
-import { Service } from "moleculer";
+import { ITelnetClientOptions } from "../types";
 
 abstract class TelnetOptionHandler {
   abstract match(sequence: Buffer): boolean;
@@ -46,21 +46,6 @@ class WillCharsetDont extends TelnetOptionHandler {
   async handle(client: TelnetTestClient, sequence: Buffer): Promise<void> {
     return client.sendDont(OPTIONS.CHARSET);
   }
-}
-
-/**
- * The TelnetClient options.
- */
-export interface ITelnetClientOptions {
-  /**
-   * Whether to enable the Telnet TTYPE option.
-   */
-  ttype?: boolean;
-
-  /**
-   * The charset to use for the Telnet connection. If null, the server will default to `ascii`.
-   */
-  charset?: string;
 }
 
 /**

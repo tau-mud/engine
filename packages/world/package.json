@@ -1,0 +1,47 @@
+{
+  "name": "@tau-mud/world",
+  "version": "0.0.0",
+  "description": "The Tau MUD Engine World Plugin",
+  "author": "Jarod <therealfugu@gmail.com>",
+  "homepage": "https://github.com/tau-mud/engine/packages/world",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tau-mud/engine/packages/world"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.4.0",
+    "@types/node": "^18.11.18",
+    "build-configs": "*",
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5",
+    "tscpaths": "^0.0.9",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@tau-mud/core": "*",
+    "cli-boxes": "^3.0.0",
+    "ink": "^3.2.0",
+    "module-alias": "^2.2.2",
+    "moleculer": "^0.14.28",
+    "moleculer-db": "^0.8.21",
+    "moleculer-db-adapter-mongoose": "^0.9.1",
+    "react": "^18.2.0",
+    "tsconfig-paths": "^4.1.2"
+  }
+}

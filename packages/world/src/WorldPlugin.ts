@@ -1,8 +1,10 @@
 import { Plugin } from "@tau-mud/core";
-import { controllers } from "./controllers";
+import * as controllers from "./controllers";
 
 export class WorldPlugin extends Plugin {
-  services = {
-    world: [...controllers],
+  readonly services = {
+    world: {
+      ...controllers,
+    },
   };
 }

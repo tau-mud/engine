@@ -1,5 +1,5 @@
 import React from "react";
-import { IWorldSettings } from "../IWorldSettings";
+import { IWorldSettings } from "../types/IWorldSettings";
 
 export const ThemeContext = React.createContext<IWorldSettings>({} as any);
 
