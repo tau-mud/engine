@@ -16,6 +16,7 @@ import {
   IGetAllMetadataActionParams as IMoleculerTelnetGetAllMetadataActionParams,
   IMergeMetadataActionParams as IMoleculerTelnetMergeMetadataActionParams,
   IDeleteMetadataActionParams as IMoleculerTelnetDeleteMetadataActionParams,
+  IOnSocketDataActionParams as IMoleculerTelnetOnSocketDataActionParams,
 } from "moleculer-telnet";
 import { get } from "lodash";
 
@@ -134,6 +135,26 @@ export interface IDeleteMetadataActionParams
   extends IMoleculerTelnetDeleteMetadataActionParams {}
 
 /**
+ * The `onData` action parameters.
+ */
+export interface IOnDataActionParams
+  extends IMoleculerTelnetOnSocketDataActionParams {}
+
+/**
+ * The parameters for the {@link PortalMixin} `setController` action.
+ */
+export interface ISetControllerActionParams extends IConnectionActionParams {
+  /**
+   * The name of the controller to set.
+   */
+  controller: string;
+}
+
+interface IErrorMeta {
+  error: boolean;
+}
+
+/**
  * The PortalMixin is a mixin that can be used to create a portal service. A portal service is a service that provides
  * the ability for a client to connect to the MUD. The portal service is responsible for maintaining the connection to
  * the client and providing the ability for the client to send and receive data from the game world. It also is
@@ -179,6 +200,7 @@ export interface IDeleteMetadataActionParams
  * | `getAllMetadata` | {@link IConnectionActionParams} | Gets all metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
  * | `setMetadata` | {@link ISetMetadataActionParams} | Sets the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
  * | `deleteMetadata` | {@link IDeleteMetadataActionParams} | Deletes the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
+ * | `setController` | {@link ISetMetadataActionParams} | Sets the controller for the connection. This will emit the `portal.controller.set` event. |
  *
  * #### Events
  * | Event | Parameters | Description |
@@ -187,6 +209,8 @@ export interface IDeleteMetadataActionParams
  * | `portal.disconnected` | {@link IConnectionActionParams} | Emitted when a client disconnects from the portal. |
  * | `portal.timeout` | {@link IConnectionActionParams} | Emitted when a client times out from the portal. |
  * | `portal.metadata.set` | {@link IGetMetadataActionParams} | Emitted when a client's metadata is set. |
+ * | `portal.metadata.deleted` | {@link IDeleteMetadataActionParams} | Emitted when a client's metadata is deleted. |
+ * | `portal.controller.set` | {@link ISetMetadataActionParams} | Emitted when a client's controller is set. |
  *
  *
  */
@@ -195,17 +219,50 @@ export const PortalMixin: IBasePortalServiceSchema = {
 
   settings(mudSettings) {
     return {
-      defaultPortal: get(mudSettings, "defaultPortal", "motd"),
+      defaultController: get(mudSettings, "portal.defaultController", "motd"),
     };
   },
 
+  hooks: {
+    error: {
+      async "*"(
+        this: Service,
+        ctx: Context<IConnectionActionParams, IErrorMeta>,
+        err
+      ) {
+        if (!ctx.meta.error) {
+          await this.actions.write(
+            {
+              id: ctx.params.id,
+              data: "Something went terribly wrong, please reconnect and try again later.",
+            },
+            { meta: { error: true } }
+          );
+        }
+        this.logger.error(err, { connectionId: ctx.params.id });
+      },
+    },
+  },
+
   actions: {
-    write: {
+    deleteMetadata: {
       params: {
         id: "string",
-        data: "any",
       },
-      async handler(this: ServiceBroker, ctx: Context<IWriteActionParams>) {
+      hooks: {
+        async after(this: Service, ctx: Context<{ id: string }>) {
+          await this.broker.emit("portal.metadata.deleted", {
+            id: ctx.params.id,
+          });
+        },
+      },
+    },
+
+    getAllMetadata: {
+      params: {
+        id: "string",
+      },
+      async handler(this: Service, ctx: Context<IGetMetadataActionParams>) {
         throw new Errors.MoleculerError(
           "Not implemented",
           501,
@@ -214,42 +271,172 @@ export const PortalMixin: IBasePortalServiceSchema = {
       },
     },
 
-    writeLine: {
+    getMetadata: {
       params: {
         id: "string",
-        data: "any",
+        key: "string",
       },
-      async handler(this: ServiceBroker, ctx: Context<IWriteActionParams>) {
-        if (typeof ctx.params.data === "string") {
-          ctx.params.data = Buffer.from(ctx.params.data + "\r\n");
-        } else {
-          ctx.params.data = Buffer.concat([
-            ctx.params.data,
-            Buffer.from("\r\n"),
-          ]);
-        }
-
-        return this.actions.write({
-          id: ctx.params.id,
-          message: ctx.params.data,
-        });
+      async handler(this: Service, ctx: Context<{ id: string; key: string }>) {
+        throw new Errors.MoleculerError(
+          "Not implemented",
+          501,
+          "NOT_IMPLEMENTED"
+        );
       },
     },
 
-    writeLines: {
+    mergeMetadata: {
+      params: {
+        id: "string",
+        data: "object",
+      },
+      hooks: {
+        async after(this: Service, ctx: Context<IMergeMetadataActionParams>) {
+          for (const key of Object.keys(ctx.params.data)) {
+            await this.broker.emit("portal.metadata.set", {
+              id: ctx.params.id,
+              key,
+            });
+          }
+        },
+      },
+      async handler(
+        this: ServiceBroker,
+        ctx: Context<IMergeMetadataActionParams>
+      ) {
+        throw new Errors.MoleculerError(
+          "Not implemented",
+          501,
+          "NOT_IMPLEMENTED"
+        );
+      },
+    },
+
+    onConnect: {
+      params: {
+        id: "string",
+      },
+      visibility: "private",
+      async handler(this: Service, ctx: Context<IConnectionActionParams>) {
+        return this.broker.emit("portal.connected", { id: ctx.params.id });
+      },
+      hooks: {
+        async before(this: Service, ctx: Context<IConnectionActionParams>) {
+          return this.actions.setMetadata({
+            id: ctx.params.id,
+            key: "portal",
+            value: this.name,
+          });
+        },
+        async after(this: Service, ctx: Context<IConnectionActionParams>) {
+          await this.actions.writeLine({
+            id: ctx.params.id,
+            data: `Tau MUD Engine v${packageJson.version}`,
+          });
+
+          await ctx.call("connections.register", {
+            id: ctx.params.id,
+            portal: this.name,
+          });
+
+          return this.actions.setController({
+            id: ctx.params.id,
+            controller: this.settings.defaultController,
+          });
+        },
+      },
+    },
+
+    onData: {
       params: {
         id: "string",
         data: "any",
       },
-      async handler(this: ServiceBroker, ctx: Context<IWriteActionParams>) {
-        const lines = ctx.params.data.toString().split(/\r?\n/);
+      visibility: "private",
+      async handler(this: Service, ctx: Context<IWriteActionParams>) {
+        const metadata = await this.actions.getAllMetadata({
+          id: ctx.params.id,
+        });
 
-        for (const line of lines) {
-          await this.actions.writeLine({
+        const controller = `controllers.${metadata.controller}`;
+
+        const data = ctx.params.data.toString().split(/\r?\n/);
+
+        for (const line of data) {
+          if (line.length > 0) {
+            await ctx.broker.call(`${controller}.receive`, {
+              id: ctx.params.id,
+              metadata,
+              line,
+            });
+          }
+        }
+      },
+    },
+
+    onDisconnect: {
+      params: {
+        id: "string",
+      },
+      visibility: "private",
+      async handler(this: Service, ctx: Context<IConnectionActionParams>) {
+        return this.broker.emit("portal.disconnected", { id: ctx.params.id });
+      },
+    },
+
+    onTimeout: {
+      params: {
+        id: "string",
+      },
+      visibility: "private",
+      async handler(this: Service, ctx: Context<IConnectionActionParams>) {
+        return this.broker.emit("portal.timeout", { id: ctx.params.id });
+      },
+    },
+
+    setController: {
+      params: {
+        id: "string",
+        controller: "string",
+      },
+      hooks: {
+        async after(this: Service, ctx: Context<ISetControllerActionParams>) {
+          return this.broker.emit("portal.controller.set", {
             id: ctx.params.id,
-            message: line,
+            controller: ctx.params.controller,
+          });
+        },
+      },
+      async handler(this: Service, ctx: Context<ISetControllerActionParams>) {
+        const metadata = await this.actions.getAllMetadata({
+          id: ctx.params.id,
+        });
+
+        let connection = {
+          id: ctx.params.id,
+          ...metadata,
+        };
+
+        if (metadata.controller) {
+          await ctx.call(`controllers.${metadata.controller}.stop`, {
+            id: ctx.params.id,
+            connection,
           });
         }
+
+        await this.actions.mergeMetadata({
+          id: ctx.params.id,
+          data: {
+            controller: ctx.params.controller,
+          },
+        });
+
+        connection.controller = ctx.params.controller;
+
+        return ctx.call(`controllers.${ctx.params.controller}.start`, {
+          id: ctx.params.id,
+          connection,
+        });
       },
     },
 
@@ -282,98 +469,56 @@ export const PortalMixin: IBasePortalServiceSchema = {
       },
     },
 
-    mergeMetadata: {
-      params: {
-        id: "string",
-        metadata: "object",
-      },
-    },
-
-    getMetadata: {
-      params: {
-        id: "string",
-        key: "string",
-      },
-      async handler(this: Service, ctx: Context<{ id: string; key: string }>) {
-        throw new Errors.MoleculerError(
-          "Not implemented",
-          501,
-          "NOT_IMPLEMENTED"
-        );
-      },
-    },
-
-    getAllMetadata: {
-      params: {
-        id: "string",
-      },
-      async handler(this: Service, ctx: Context<IGetMetadataActionParams>) {
-        throw new Errors.MoleculerError(
-          "Not implemented",
-          501,
-          "NOT_IMPLEMENTED"
-        );
-      },
-    },
-
-    onConnect: {
-      params: {
-        id: "string",
-      },
-      visibility: "private",
-      async handler(this: Service, ctx: Context<IConnectionActionParams>) {
-        return this.broker.emit("portal.connected", { id: ctx.params.id });
-      },
-      hooks: {
-        async after(this: Service, ctx: Context<IConnectionActionParams>) {
-          return this.actions.writeLine({
-            id: ctx.params.id,
-            message: `Tau MUD Engine v${packageJson.version}`,
-          });
-        },
-      },
-    },
-
-    onData: {
+    write: {
       params: {
         id: "string",
         data: "any",
       },
-      visibility: "private",
-      async handler(this: Service, ctx: Context<IWriteActionParams>) {
-        const metadata = await this.actions.getAllMetadata({
-          id: ctx.params.id,
-        });
+      async handler(this: ServiceBroker, ctx: Context<IWriteActionParams>) {
+        throw new Errors.MoleculerError(
+          "Not implemented",
+          501,
+          "NOT_IMPLEMENTED"
+        );
+      },
+    },
 
-        const controller = `controllers.${metadata.controller}`;
-
-        const data = ctx.params.data.toString().split(/\r?\n/);
-
-        for (const line of data) {
-          if (line.length > 0) {
-            await ctx.broker.call(`${controller}.receive`, { metadata, line });
-          }
+    writeLine: {
+      params: {
+        id: "string",
+        data: "any",
+      },
+      async handler(this: ServiceBroker, ctx: Context<IWriteActionParams>) {
+        if (typeof ctx.params.data === "string") {
+          ctx.params.data = Buffer.from(ctx.params.data + "\r\n");
+        } else {
+          ctx.params.data = Buffer.concat([
+            ctx.params.data,
+            Buffer.from("\r\n"),
+          ]);
         }
+
+        return this.actions.write({
+          id: ctx.params.id,
+          data: ctx.params.data,
+        });
       },
     },
 
-    onDisconnect: {
+    writeLines: {
       params: {
         id: "string",
+        data: "any",
       },
-      visibility: "private",
-      async handler(this: Service, ctx: Context<IConnectionActionParams>) {
-        return this.broker.emit("portal.disconnected", { id: ctx.params.id });
-      },
-    },
+      async handler(this: ServiceBroker, ctx: Context<IWriteActionParams>) {
+        const lines = ctx.params.data.toString().trim().split(/\r?\n/);
 
-    onTimeout: {
-      params: {
-        id: "string",
-      },
-      visibility: "private",
-      async handler(this: Service, ctx: Context<IConnectionActionParams>) {
-        return this.broker.emit("portal.timeout", { id: ctx.params.id });
+        for (const line of lines) {
+          await this.actions.writeLine({
+            id: ctx.params.id,
+            data: line,
+          });
+        }
       },
     },
   },

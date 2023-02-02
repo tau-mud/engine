@@ -1,44 +1,16 @@
 import {
   BrokerOptions,
+  Service,
   ServiceBroker,
   ServiceSchema,
-  Service as MoleculerService,
 } from "moleculer";
 import { defaultsDeep } from "lodash";
+import { RedisClientOptions } from "redis";
 
-import { ServiceFactory, Service } from "../service";
-import { IPluginConstructor, Plugin } from "../Plugin";
-import { compose } from "underscore";
-
-/**
- * A list of services to load when the game starts, keyed by the process name. The key `all` is used to denote services
- * that should be loaded on all processes.
- */
-export type TServiceList = {
-  [index: string]: Array<ServiceSchema | typeof Service>;
-};
-
-/**
- * Configuration options for the Tau MUD Engine. The configuration is provided in the games `config/<process>.config.ts`
- * files, where `process` is the name of the process being run. This allows for separate configuration for each process.
- */
-export interface IConfig extends BrokerOptions {
-  /**
-   * The name of the process that is being run.
-   */
-  processName?: string;
-
-  /**
-   * A list of plugins to load. The plugins will be loaded in the order they are provided.
-   */
-  plugins: Array<Plugin>;
-
-  /**
-   * A list of services to load indexed by process name. The key `all` will ensure a service is loaded for all
-   * processes.
-   */
-  services?: TServiceList;
-}
+import { Plugin } from "../Plugin";
+import { ServiceFactory } from "./ServiceFactory";
+import { ITauConfig } from "../types/ITauConfig";
+import { TTauPluginServiceList } from "../types/TTauPluginServiceList";
 
 /**
  * Configure a Tau MUD Engine process. If `baseConfig` is provided, it is merged with the config using
@@ -59,69 +31,83 @@ export interface IConfig extends BrokerOptions {
  * @constructor
  */
 export function Configure(
-  config: Partial<IConfig>,
-  baseConfig: Partial<IConfig> = {}
-): IConfig {
+  config: Partial<ITauConfig>,
+  baseConfig: Partial<ITauConfig> = {}
+): ITauConfig {
   return defaultsDeep(
     {
       created(broker: ServiceBroker) {
-        const options: IConfig = <IConfig>broker.options;
+        const options: ITauConfig = <ITauConfig>broker.options;
 
         const plugins = options.plugins || [];
         broker.logger.info(`Loading ${plugins.length} plugins`);
 
-        plugins.forEach((plugin: Plugin) => {
+        plugins.forEach((plugin: typeof Plugin) => {
           broker.logger.info(`Loading plugin '${plugin.name}'`);
 
-          if (plugin.created) {
+          const plug = new plugin(broker);
+
+          if (plug.created) {
             broker.logger.info(`Calling 'created' for plugin '${plugin.name}'`);
-            plugin.created(broker);
+            plug.created();
           }
         });
       },
 
       started(broker: ServiceBroker) {
-        const options: IConfig = <IConfig>broker.options;
+        const options: ITauConfig = <ITauConfig>broker.options;
 
         const plugins = options.plugins || [];
+        let servicesToCreate: TTauPluginServiceList = {};
+
         broker.logger.info(`calling 'started' for ${plugins.length} plugins`);
 
-        plugins.forEach((plugin: Plugin) => {
+        plugins.forEach((plugin: typeof Plugin) => {
           broker.logger.info(`Calling 'started' for plugin '${plugin.name}'`);
-          if (plugin.started) {
-            plugin.started(broker);
+          const plug = new plugin(broker);
+
+          if (plug.started) {
+            plug.started();
           }
 
-          if (plugin.services && options.processName) {
-            let services = plugin.services.all || [];
-            services = services.concat(
-              plugin.services[options.processName] || []
+          if (plug.services && options.processName) {
+            servicesToCreate = defaultsDeep(
+              plug.services.all || {},
+              servicesToCreate
             );
 
-            broker.logger.info(
-              `Loading ${services.length} services for plugin '${plugin.name}'`
+            servicesToCreate = defaultsDeep(
+              plug.services[options.processName] || {},
+              servicesToCreate
             );
-            services.forEach((service: ServiceSchema | typeof Service) => {
-              broker.createService(service);
-            });
           } else if (!options.processName) {
             broker.logger.fatal(`No process name provided.`);
 
             process.exit(1);
           }
         });
+
+        broker.logger.info(
+          `Creating ${Object.keys(servicesToCreate).length} services`
+        );
+
+        Object.values(servicesToCreate).forEach((service: ServiceSchema) => {
+          broker.createService(service);
+        });
       },
 
       stopped(broker: ServiceBroker) {
-        const options: IConfig = <IConfig>broker.options;
+        const options: ITauConfig = <ITauConfig>broker.options;
 
         const plugins = options.plugins || [];
         broker.logger.info(`calling 'stopped' for ${plugins.length} plugins`);
 
-        plugins.forEach((plugin: Plugin) => {
+        plugins.forEach((plugin: typeof Plugin) => {
           broker.logger.info(`Calling 'stopped' for plugin '${plugin.name}'`);
-          if (plugin.stopped) {
-            plugin.stopped(broker);
+          const plug = new plugin(broker);
+
+          if (plug.stopped) {
+            plug.stopped();
           }
         });
       },
@@ -144,6 +130,9 @@ export function Configure(
           objectPrinter: null,
           autoPadding: false,
         },
+      },
+      circuitBreaker: {
+        enabled: true,
       },
       transporter: process.env.TAU_TRANSPORTER || "tcp",
       plugins: [],

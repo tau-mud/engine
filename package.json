@@ -7,10 +7,14 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "docs:start": "cd docs && yarn start",
+    "docs:serve": "cd docs && yarn serve",
     "watch": "lerna exec --parallel --scope @tau-mud/* -- yarn watch"
   },
   "devDependencies": {
+    "ioredis": "^5.3.0",
     "lerna": "^6.4.1",
+    "moleculer-cli": "^0.8.1",
     "prettier": "^2.8.3"
   },
   "workspaces": [
