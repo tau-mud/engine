@@ -8,3 +8,5 @@ export * from "./IControllerContext";
 export * from "./IRegisterConnectionActionParams";
 export * from "./TWorldServiceConstructor";
 export * from "./IControllerReceiveActionParams";
+export * from "./IScreenSendProps";
+export * from "./TScreenBoxProps";

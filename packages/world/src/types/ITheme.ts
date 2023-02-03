@@ -11,4 +11,6 @@ export interface ITheme {
    * The style of border to use for bordered components
    */
   borderStyle?: keyof Boxes;
+
+  send?: TextProps;
 }

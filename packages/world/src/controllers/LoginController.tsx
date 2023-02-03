@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Controller } from "../mixins";
-import { Box, Text } from "../screen";
+import { Box, Send, Text } from "../screen";
 import { Service } from "moleculer";
 import {
   IControllerActionParams,
@@ -17,7 +17,11 @@ export const LoginController = {
       return (
         <Box>
           <Text>
-            Enter your username or type create to create a new account:
+            Enter your username or type{" "}
+            <Send href={"create"} hint={"Create a new character"}>
+              create
+            </Send>{" "}
+            to create a new account:
           </Text>
         </Box>
       );

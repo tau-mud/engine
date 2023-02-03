@@ -12,6 +12,10 @@ const world: Partial<coreTypes.ITauConfig<worldTypes.IWorldSettings>> = {
         bold: true,
       },
       borderStyle: "single",
+      send: {
+        color: "blue",
+        bold: true,
+      },
     },
     mongoUrl: process.env.TAU_MONGO_URL || "mongodb://localhost:27017",
   },
