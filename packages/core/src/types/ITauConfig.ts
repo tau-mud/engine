@@ -5,7 +5,7 @@ import { IMudSettings } from "./IMudSettings";
  * Configuration options for the Tau MUD Engine. The configuration is provided in the games `config/<process>.config.ts`
  * files, where `process` is the name of the process being run. This allows for separate configuration for each process.
  */
-export interface ITauConfig extends BrokerOptions {
+export interface ITauConfig<S = IMudSettings> extends BrokerOptions {
   /**
    * The name of the process that is being run.
    */
@@ -16,5 +16,5 @@ export interface ITauConfig extends BrokerOptions {
    */
   plugins: Array<typeof Plugin>;
 
-  settings?: Partial<IMudSettings>;
+  settings?: Partial<S>;
 }

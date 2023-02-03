@@ -1,8 +1,20 @@
-import DbService from "moleculer-db";
-import MongooseAdapter from "moleculer-db-adapter-mongoose";
+import { TWorldServiceConstructor } from "../types";
+import { Mongo } from "../mixins";
+import * as mongoose from "mongoose";
 
-export const Accounts = {
+export const Accounts: TWorldServiceConstructor = (mudSettings) => ({
   name: "data.accounts",
-  mixins: [DbService],
-  adapter: new MongooseAdapter("accounts"),
-};
+  mixins: [Mongo],
+  model: mongoose.model(
+    "Account",
+    new mongoose.Schema({
+      username: {
+        type: String,
+        required: true,
+      },
+      hashedPassword: {
+        type: String,
+      },
+    })
+  ),
+});

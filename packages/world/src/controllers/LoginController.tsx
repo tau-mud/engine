@@ -1,13 +1,17 @@
 import React from "react";
 
-import { ControllerMixin } from "../mixins";
+import { Controller } from "../mixins";
 import { Box, Text } from "../screen";
 import { Service } from "moleculer";
-import { IControllerActionParams, IControllerContext } from "../types";
+import {
+  IControllerActionParams,
+  IControllerContext,
+  IControllerReceiveActionParams,
+} from "../types";
 
 export const LoginController = {
   name: "controllers.login",
-  mixins: [ControllerMixin],
+  mixins: [Controller],
   templates: {
     loginPrompt() {
       return (
@@ -26,8 +30,16 @@ export const LoginController = {
         template: "loginPrompt",
       });
     },
-    receive(this: Service, ctx: IControllerContext<IControllerActionParams>) {
-      this.logger.info("Received input: ", ctx.params);
+    async receive(
+      this: Service,
+      ctx: IControllerContext<IControllerReceiveActionParams>
+    ) {
+      const accounts = await ctx.call("data.accounts.find", {
+        limit: 1,
+        query: {
+          username: ctx.params.data.trim(),
+        },
+      });
     },
   },
 };

@@ -1,4 +1,8 @@
-import { MoleculerTelnet } from "moleculer-telnet";
+import {
+  COMMANDS,
+  MoleculerTelnet,
+  TelnetOptionHandler,
+} from "moleculer-telnet";
 
 import {
   IPortalServiceSchema,
@@ -9,12 +13,50 @@ import {
   IPortalSettings,
 } from "../types";
 
-import { PortalMixin } from "../mixins";
+import { Portal } from "../mixins";
 import { get } from "lodash";
 import { Context, Service } from "moleculer";
-import { types } from "@tau-mud/core";
 
-// @ts-ignore
+const OPTIONS = {
+  MXP: 91,
+};
+
+class WillMXP extends TelnetOptionHandler {
+  match(sequence: Buffer) {
+    return (
+      sequence[0] === COMMANDS.IAC &&
+      sequence[1] === COMMANDS.WILL &&
+      sequence[2] === OPTIONS.MXP
+    );
+  }
+
+  handle(id: string, service: Service, sequence: Buffer) {
+    return service.actions.setMetadata({
+      id,
+      key: "mxp",
+      value: true,
+    });
+  }
+}
+
+class WontMXP extends TelnetOptionHandler {
+  match(sequence: Buffer) {
+    return (
+      sequence[0] === COMMANDS.IAC &&
+      sequence[1] === COMMANDS.WONT &&
+      sequence[2] === OPTIONS.MXP
+    );
+  }
+
+  handle(id: string, service: Service, sequence: Buffer) {
+    return service.actions.setMetadata({
+      id,
+      key: "mxp",
+      value: false,
+    });
+  }
+}
+
 /**
  * The TelnetPortal is a portal that allows players to connect to the MUD via telnet. The TelnetPortal utilizes the
  * [moleculer-telnet](https://github.com/fugufish/moleculer-telnet) mixin to provide the telnet functionality.
@@ -31,7 +73,7 @@ export const TelnetPortal: TPortalServiceConstructor = (
   mudSettings: Partial<IPortalSettings>
 ): IPortalServiceSchema => ({
   name: "telnet-portal",
-  mixins: [MoleculerTelnet, PortalMixin],
+  mixins: [MoleculerTelnet, Portal],
 
   settings: {
     host: get(mudSettings, "telnet.host", "127.0.0.1"),
@@ -40,7 +82,17 @@ export const TelnetPortal: TPortalServiceConstructor = (
     charset: get(mudSettings, "telnet.charset", "UTF-8"),
   },
 
-  // we can ignore this because the metadata actions are mixed in from teh MoleculerTelnet mixin
+  async started(this: Service) {
+    await this.actions.registerTelnetOptionHandler({
+      handler: WillMXP,
+    });
+
+    await this.actions.registerTelnetOptionHandler({
+      handler: WontMXP,
+    });
+  },
+
+  // we can ignore this because the metadata actions are mixed in from the MoleculerTelnet mixin
   // @ts-ignore
   actions: {
     write: {
@@ -73,6 +125,8 @@ export const TelnetPortal: TPortalServiceConstructor = (
     onSocketTelnetNegotiationsComplete: {
       hooks: {
         async after(this: Service, ctx: Context<IPortalActionParams>) {
+          await this.actions.sendDo({ id: ctx.params.id, option: OPTIONS.MXP });
+
           return this.actions.onConnect({ id: ctx.params.id });
         },
       },

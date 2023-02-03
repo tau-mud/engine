@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "docs:watch": "nodemon --watch packages --ext ts,tsx --exec \"typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --theme github-wiki --entryDocument ./README.md --out wiki/api --entryPointStrategy packages --exclude *.spect.ts --excludePrivate true --entryPoints packages/core\"",
+    "docs:watch": "nodemon --watch packages --ext ts,tsx --exec \"typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --theme github-wiki --entryDocument ./README.md --out wiki/api --entryPointStrategy packages --exclude *.spect.ts --excludePrivate true --entryPoints packages/core packages/world packages/portal\"",
     "packages:watch": "lerna exec --parallel --scope @tau-mud/* -- yarn watch"
   },
   "devDependencies": {

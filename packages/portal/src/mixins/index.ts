@@ -1,1 +1,1 @@
-export * from "./PortalMixin";
+export * from "./Portal";

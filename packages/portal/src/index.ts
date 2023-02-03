@@ -1,3 +1,3 @@
 export * as portals from "./portals";
 export * from "./PortalPlugin";
-export * from "./mixins/PortalMixin";
+export * as mixins from "./mixins";

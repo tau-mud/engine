@@ -1,8 +1,9 @@
-import { config, types } from "@tau-mud/core";
+import { config, types as coreTypes } from "@tau-mud/core";
+import { types as worldTypes } from "@tau-mud/world";
 
 import base from "./base.config";
 
-const world: Partial<types.ITauConfig> = {
+const world: Partial<coreTypes.ITauConfig<worldTypes.IWorldSettings>> = {
   processName: "world",
   settings: {
     theme: {
@@ -12,6 +13,7 @@ const world: Partial<types.ITauConfig> = {
       },
       borderStyle: "single",
     },
+    mongoUrl: process.env.TAU_MONGO_URL || "mongodb://localhost:27017",
   },
 };
 

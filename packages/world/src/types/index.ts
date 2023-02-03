@@ -6,3 +6,5 @@ export * from "./IControllerRenderActionParams";
 export * from "./IControllerSendActionParams";
 export * from "./IControllerContext";
 export * from "./IRegisterConnectionActionParams";
+export * from "./TWorldServiceConstructor";
+export * from "./IControllerReceiveActionParams";

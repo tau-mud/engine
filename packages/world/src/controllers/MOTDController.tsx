@@ -1,13 +1,13 @@
 import React from "react";
 
-import { ControllerMixin } from "../mixins";
+import { Controller } from "../mixins";
 import { Box, Text, GameName } from "../screen";
 import { types } from "@tau-mud/core";
 import { IControllerActionParams, IControllerContext } from "../types";
 
 export const MOTDController: types.ITauServiceSchema = {
   name: "controllers.motd",
-  mixins: [ControllerMixin],
+  mixins: [Controller],
   templates: {
     motd() {
       return (
