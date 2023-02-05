@@ -4,3 +4,4 @@ export * from "./WithTheme";
 export * from "./WithConnection";
 export * from "./GameName";
 export * from "./Send";
+export * from "./UserError";

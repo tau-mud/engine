@@ -1,6 +1,7 @@
+import React from "react";
 import { IControllerActionParams } from "./IControllerActionParams";
 
 export interface IControllerRenderActionParams extends IControllerActionParams {
-  template: string;
   props: any;
+  content: React.FunctionComponent;
 }

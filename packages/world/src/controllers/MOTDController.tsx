@@ -26,7 +26,7 @@ export const MOTDController: types.ITauServiceSchema = {
       // wait a second so negotiations can complete
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      await this.actions.render({
+      await this.actions.renderTemplate({
         id: ctx.params.id,
         template: "motd",
       });

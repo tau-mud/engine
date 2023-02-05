@@ -13,4 +13,6 @@ export interface ITheme {
   borderStyle?: keyof Boxes;
 
   send?: TextProps;
+
+  userError?: TextProps;
 }

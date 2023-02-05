@@ -16,6 +16,9 @@ const world: Partial<coreTypes.ITauConfig<worldTypes.IWorldSettings>> = {
         color: "blue",
         bold: true,
       },
+      userError: {
+        color: "red",
+      },
     },
     mongoUrl: process.env.TAU_MONGO_URL || "mongodb://localhost:27017",
   },

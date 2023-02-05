@@ -28,8 +28,11 @@ export const LoginController = {
     },
   },
   actions: {
-    start(this: Service, ctx: IControllerContext<IControllerActionParams>) {
-      this.actions.render({
+    async start(
+      this: Service,
+      ctx: IControllerContext<IControllerActionParams>
+    ) {
+      return this.actions.renderTemplate({
         id: ctx.params.id,
         template: "loginPrompt",
       });
@@ -38,12 +41,12 @@ export const LoginController = {
       this: Service,
       ctx: IControllerContext<IControllerReceiveActionParams>
     ) {
-      const accounts = await ctx.call("data.accounts.find", {
-        limit: 1,
-        query: {
-          username: ctx.params.data.trim(),
-        },
-      });
+      if (ctx.params.data === "create") {
+        return ctx.call("connections.setController", {
+          id: ctx.params.id,
+          controller: "createAccount",
+        });
+      }
     },
   },
 };

@@ -7,9 +7,10 @@ import {
   IControllerActionParams,
   IControllerConnectionData,
   IControllerContext,
-  IControllerRenderActionParams,
+  IControllerRenderTemplateActionParams,
   IControllerSendActionParams,
   IControllerReceiveActionParams,
+  IControllerRenderActionParams,
 } from "../types";
 
 class InkBuffer extends EventEmitter {
@@ -92,13 +93,7 @@ export const Controller: types.ITauServiceSchema = {
       params: {
         id: "string",
       },
-      handler(ctx) {
-        throw new Errors.MoleculerError(
-          "Not implemented",
-          501,
-          "NOT_IMPLEMENTED"
-        );
-      },
+      handler(ctx) {},
       hooks: {
         after(this: Service, ctx) {
           this.broker.logger.debug("Controller stopped", ctx.params.id);
@@ -128,7 +123,7 @@ export const Controller: types.ITauServiceSchema = {
       },
     },
 
-    render: {
+    renderTemplate: {
       params: {
         id: "string",
         template: "string",
@@ -138,7 +133,9 @@ export const Controller: types.ITauServiceSchema = {
         },
       },
       visibility: "protected",
-      async handler(ctx: IControllerContext<IControllerRenderActionParams>) {
+      async handler(
+        ctx: IControllerContext<IControllerRenderTemplateActionParams>
+      ) {
         const templates = this.originalSchema.templates;
 
         if (!templates) {
@@ -159,18 +156,47 @@ export const Controller: types.ITauServiceSchema = {
           );
         }
 
+        return this.actions.render({
+          id: ctx.params.id,
+          content: template,
+          props: ctx.params.props,
+        });
+      },
+    },
+    render: {
+      params: {
+        id: "string",
+        content: "any",
+        props: {
+          type: "object",
+          optional: true,
+        },
+      },
+      visibility: "protected",
+      async handler(ctx: IControllerContext<IControllerRenderActionParams>) {
         const connection: IControllerConnectionData = <
           IControllerConnectionData
         >ctx.connection;
+
+        const { props, content } = ctx.params;
 
         const buffer = new InkBuffer(
           connection.screen ? connection.screen.width : 100
         );
 
-        const props = ctx.params.props || {};
+        const element = content(props || {});
+
+        if (!element) {
+          throw new Errors.MoleculerError(
+            "No content returned",
+            500,
+            "NO_CONTENT"
+          );
+        }
+
         const templateWithConnection = WithConnection(
           connection,
-          WithTheme(this.getMudSetting("theme"), template(props))
+          WithTheme(this.getMudSetting("theme"), element)
         );
 
         const { cleanup } = render(templateWithConnection, {
