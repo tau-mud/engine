@@ -39,6 +39,7 @@
     "@tau-mud/core": "*",
     "bcrypt": "^5.1.0",
     "cli-boxes": "^3.0.0",
+    "cli-table3": "^0.6.3",
     "fastest-validator": "^1.16.0",
     "ink": "^3.2.0",
     "module-alias": "^2.2.2",

@@ -1,28 +1,40 @@
 import React from "react";
 
-import { Controller } from "../mixins";
-import { Box, Send, Text } from "../screen";
-import { Service } from "moleculer";
 import {
+  Controller,
   IControllerActionParams,
   IControllerContext,
   IControllerReceiveActionParams,
-} from "../types";
+} from "../mixins";
+import { Box, CTA, Send, Text } from "../screen";
+import { Service } from "moleculer";
+import { Account } from "../models";
 
 export const LoginController = {
   name: "controllers.login",
   mixins: [Controller],
   templates: {
-    loginPrompt() {
+    usernamePrompt() {
       return (
         <Box>
           <Text>
-            Enter your username or type{" "}
-            <Send href={"create"} hint={"Create a new character"}>
-              create
-            </Send>{" "}
-            to create a new account:
+            Enter your username or type <CTA>create</CTA> to create a new
+            account:
           </Text>
+        </Box>
+      );
+    },
+    passwordPrompt() {
+      return (
+        <Box>
+          <Text>Enter your password:</Text>
+        </Box>
+      );
+    },
+    loginFailed() {
+      return (
+        <Box>
+          <Text>Invalid username or password.</Text>
         </Box>
       );
     },
@@ -34,7 +46,7 @@ export const LoginController = {
     ) {
       return this.actions.renderTemplate({
         id: ctx.params.id,
-        template: "loginPrompt",
+        template: "usernamePrompt",
       });
     },
     async receive(
@@ -47,6 +59,85 @@ export const LoginController = {
           controller: "createAccount",
         });
       }
+
+      let flash: Record<string, any> = await ctx.call(
+        "connections.getAllFlash",
+        {
+          id: ctx.params.id,
+        }
+      );
+
+      if (!flash.step) {
+        flash.step = "username";
+      }
+
+      if (flash.step === "password") {
+        const accountRecords = (await ctx.call("data.accounts.find", {
+          query: {
+            usernameStub: flash.account.usernameStub,
+          },
+          limit: 1,
+        })) as Array<Record<string, any>>;
+
+        const accountObject = accountRecords[0];
+
+        if (!accountObject) {
+          await this.actions.renderTemplate({
+            id: ctx.params.id,
+            template: "loginFailed",
+          });
+
+          flash.step = "username";
+        } else {
+          const accountRecord = new Account(accountObject);
+
+          const isMatch = accountRecord.comparePassword(ctx.params.data);
+
+          if (isMatch) {
+            return ctx.call("connections.setController", {
+              id: ctx.params.id,
+              controller: "main",
+            });
+          } else {
+            await this.actions.renderTemplate({
+              id: ctx.params.id,
+              template: "loginFailed",
+            });
+
+            flash.step = "username";
+          }
+        }
+      } else {
+        const account: Record<string, any> = flash.account || {};
+
+        account[flash.step] = ctx.params.data;
+
+        flash.account = account;
+
+        switch (flash.step) {
+          case "username":
+            flash.step = "password";
+        }
+      }
+
+      await ctx.call("connections.replaceFlash", {
+        id: ctx.params.id,
+        data: flash,
+      });
+
+      return this.renderStep(ctx, flash);
+    },
+  },
+  methods: {
+    async renderStep(
+      this: Service,
+      ctx: IControllerContext<IControllerActionParams>,
+      flash: Record<string, any>
+    ) {
+      return this.actions.renderTemplate({
+        id: ctx.params.id,
+        template: `${flash.step}Prompt`,
+      });
     },
   },
 };

@@ -1,7 +1,8 @@
 import { types } from "@tau-mud/core";
 import { Context } from "moleculer";
+
+import { defaultsDeep } from "lodash";
 import {
-  IConnectionsRegisterConnectionActionParams,
   IPortalActionParams,
   IPortalDeleteMetadataActionParams,
   IPortalGetAllMetadataActionParams,
@@ -10,8 +11,12 @@ import {
   IPortalSetControllerActionParams,
   IPortalSetMetadataActionParams,
   IPortalWriteActionParams,
-} from "types";
-import { defaultsDeep } from "lodash";
+} from "../mixins";
+
+export interface IConnectionsRegisterConnectionActionParams
+  extends IPortalActionParams {
+  portal: string;
+}
 
 /**
  * The ConnectionRegistry service is responsible for simply tracking connections across all portals, providing a common
@@ -148,6 +153,32 @@ export const Connections: types.ITauServiceSchema = {
 
         await this.actions.resetFlash({ id });
         return ctx.call(`${portal}.setController`, { id, controller });
+      },
+    },
+
+    echoOff: {
+      params: {
+        id: "string",
+      },
+      async handler(ctx: Context<IPortalWriteActionParams>) {
+        const { id } = ctx.params;
+
+        const portal = this.connections[id];
+
+        return ctx.call(`${portal}.echoOff`, { id });
+      },
+    },
+
+    echoOn: {
+      params: {
+        id: "string",
+      },
+      async handler(ctx: Context<IPortalWriteActionParams>) {
+        const { id } = ctx.params;
+
+        const portal = this.connections[id];
+
+        return ctx.call(`${portal}.echoOn`, { id });
       },
     },
 

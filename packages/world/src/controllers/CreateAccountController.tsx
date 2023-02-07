@@ -1,14 +1,22 @@
 import { types } from "@tau-mud/core";
-import { Controller } from "../mixins";
 import React from "react";
-import { Box, Text, UserError } from "../screen";
-import { Context, Service, Errors, GenericObject } from "moleculer";
+import { Context, Service } from "moleculer";
 
 import {
+  Controller,
   IControllerActionParams,
+  IControllerContext,
   IControllerReceiveActionParams,
-} from "../types";
-import { hash } from "bcrypt";
+} from "../mixins";
+
+import { Box, CTA, Table, Text, UserError } from "../screen";
+
+interface IAccountDetails {
+  account: {
+    username: string;
+    email: string;
+  };
+}
 
 export const CreateAccountController: types.ITauServiceSchema = {
   name: "controllers.createAccount",
@@ -42,9 +50,39 @@ export const CreateAccountController: types.ITauServiceSchema = {
         </Box>
       );
     },
+    confirmationPrompt(props: IAccountDetails) {
+      const data = [
+        ["Username:", props.account.username],
+        ["Email:", props.account.email],
+      ];
+
+      return (
+        <Box padding={1} flexDirection={"column"}>
+          <Box>
+            <Text>Review your account details:</Text>
+          </Box>
+          <Table data={data} />
+          <Box paddingTop={1}>
+            <Text>
+              Is this correct? (<CTA>Y</CTA>/<CTA>N</CTA>)
+            </Text>
+          </Box>
+        </Box>
+      );
+    },
+    accountCreated() {
+      return (
+        <Box>
+          <Text>Your account was created!</Text>
+        </Box>
+      );
+    },
   },
   actions: {
-    async start(this: Service, ctx: Context<IControllerActionParams>) {
+    async start(
+      this: Service,
+      ctx: IControllerContext<IControllerActionParams>
+    ) {
       await ctx.call("connections.setFlash", {
         id: ctx.params.id,
         key: "step",
@@ -57,13 +95,53 @@ export const CreateAccountController: types.ITauServiceSchema = {
       });
     },
 
-    async receive(this: Service, ctx: Context<IControllerReceiveActionParams>) {
+    async receive(
+      this: Service,
+      ctx: IControllerContext<IControllerReceiveActionParams>
+    ) {
       const flash: Record<string, any> = await ctx.call(
         "connections.getAllFlash",
         {
           id: ctx.params.id,
         }
       );
+
+      if (flash.step === "confirmation") {
+        if (
+          ctx.params.data.toLowerCase() === "y" ||
+          ctx.params.data.toLowerCase() === "yes"
+        ) {
+          await ctx.call("data.accounts.create", flash.account);
+          await this.actions.renderTemplate({
+            id: ctx.params.id,
+            template: "accountCreated",
+          });
+
+          return ctx.call("connections.setController", {
+            id: ctx.params.id,
+            controller: "login",
+          });
+        } else if (
+          ctx.params.data.toLowerCase() === "n" ||
+          ctx.params.data.toLowerCase() === "no"
+        ) {
+          await ctx.call("connections.replaceFlash", {
+            id: ctx.params.id,
+            data: {
+              step: "username",
+            },
+          });
+
+          return this.renderNextStep(ctx.params.id);
+        } else {
+          await this.actions.render({
+            id: ctx.params.id,
+            content: () => <UserError>That is not a valid option.</UserError>,
+          });
+
+          return this.renderNextStep(ctx.params.id);
+        }
+      }
 
       const step: string = flash.step;
       let account: Record<string, any> = flash.account || {};
@@ -110,10 +188,8 @@ export const CreateAccountController: types.ITauServiceSchema = {
           flash.step = "passwordConfirmation";
           break;
         case "passwordConfirmation":
-          return this.actions.send({
-            id: ctx.params.id,
-            data: "Account valid",
-          });
+          flash.step = "confirmation";
+          break;
       }
 
       await ctx.call("connections.replaceFlash", {

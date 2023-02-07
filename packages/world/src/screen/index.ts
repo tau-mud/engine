@@ -5,3 +5,5 @@ export * from "./WithConnection";
 export * from "./GameName";
 export * from "./Send";
 export * from "./UserError";
+export * from "./Table";
+export * from "./CTA";

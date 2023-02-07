@@ -1,5 +1,5 @@
 import React, { createContext, ProviderProps } from "react";
-import { IControllerConnectionData } from "../types";
+import { IControllerConnectionData } from "../mixins";
 
 const defaultConnection: Partial<IControllerConnectionData> = {};
 

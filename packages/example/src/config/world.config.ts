@@ -12,6 +12,11 @@ const world: Partial<coreTypes.ITauConfig<worldTypes.IWorldSettings>> = {
         bold: true,
       },
       borderStyle: "single",
+      cta: {
+        color: "white",
+        bold: true,
+        underline: true,
+      },
       send: {
         color: "blue",
         bold: true,

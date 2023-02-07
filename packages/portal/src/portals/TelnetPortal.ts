@@ -2,20 +2,19 @@ import {
   COMMANDS,
   MoleculerTelnet,
   TelnetOptionHandler,
+  OPTIONS as TELOPTS,
 } from "moleculer-telnet";
 
 import {
-  IPortalServiceSchema,
   IPortalActionParams,
-  IPortalWriteActionParams,
   IPortalOnDataActionParams,
-  TPortalServiceConstructor,
-  IPortalSettings,
-} from "../types";
-
-import { Portal } from "../mixins";
+  IPortalServiceSchema,
+  IPortalWriteActionParams,
+  Portal,
+} from "../mixins";
 import { get } from "lodash";
 import { Context, Service } from "moleculer";
+import { IPortalSettings, TPortalServiceConstructor } from "../types";
 
 const OPTIONS = {
   MXP: 91,

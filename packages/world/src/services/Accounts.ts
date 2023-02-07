@@ -1,12 +1,18 @@
-import {
-  IAccountsValidateActionParams,
-  TValidationErrors,
-  TWorldServiceConstructor,
-} from "../types";
+import { TWorldServiceConstructor } from "../types";
 import { Mongo } from "../mixins";
 import { Account } from "../models";
 import { Context } from "moleculer";
 import { Error } from "mongoose";
+
+export interface IAccountsValidateActionParams {
+  account: {
+    username: string;
+    password: string;
+    email: string;
+    passwordConfirmation: string;
+  };
+  field: string;
+}
 
 export const Accounts: TWorldServiceConstructor = (mudSettings) => ({
   name: "data.accounts",

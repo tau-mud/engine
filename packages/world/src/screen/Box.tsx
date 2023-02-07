@@ -1,10 +1,40 @@
 import React, { PropsWithChildren, useContext } from "react";
-import { Box as InkBox, BoxProps as InkBoxProps, DOMElement } from "ink";
+import { Box as InkBox, BoxProps as InkBoxProps } from "ink";
+
 import { ConnectionContext } from "./WithConnection";
 import { ThemeContext } from "./WithTheme";
-import { TScreenBoxProps } from "../types/TScreenBoxProps";
 
-export const Box = (props: TScreenBoxProps) => {
+/**
+ * The Props for the Box component.
+ */
+export interface IBoxProps extends InkBoxProps {
+  /**
+   * If true, the box will fill the entire width of the screen.
+   */
+  full?: boolean;
+
+  /**
+   * If true the content will be vertically centered.
+   */
+  vCenter?: boolean;
+
+  /**
+   * If true the content will be horizontally centered.
+   */
+  hCenter?: boolean;
+
+  /**
+   * If true the content will be centered both vertically and horizontally.
+   */
+  center?: boolean;
+
+  /**
+   * If true, the box will have a border, which will default to the theme border style.
+   */
+  border?: boolean;
+}
+
+export const Box = (props: PropsWithChildren<IBoxProps>) => {
   const connection = useContext(ConnectionContext);
   const theme = useContext(ThemeContext);
   const { children, full, vCenter, hCenter, center, border, ...rest } = props;

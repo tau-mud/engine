@@ -1,5 +1,25 @@
 import { config, types } from "@tau-mud/core";
-import { ITheme } from "./ITheme";
+import { Boxes } from "cli-boxes";
+
+import { ITextProps } from "../screen";
+
+export interface ITheme {
+  /**
+   * How to display the `<GameName>` screen component.
+   */
+  gameName?: ITextProps;
+
+  /**
+   * The style of border to use for bordered components
+   */
+  borderStyle?: keyof Boxes;
+
+  send?: ITextProps;
+
+  userError?: ITextProps;
+
+  cta?: ITextProps;
+}
 
 /**
  * World specific settings.

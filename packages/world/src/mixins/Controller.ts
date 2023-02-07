@@ -1,17 +1,41 @@
 import { types, mixins } from "@tau-mud/core";
-import { Errors, Service } from "moleculer";
+import { Context, Errors, Service } from "moleculer";
 import EventEmitter from "events";
 import { render } from "ink";
+
 import { WithConnection, WithTheme } from "../screen";
-import {
-  IControllerActionParams,
-  IControllerConnectionData,
-  IControllerContext,
-  IControllerRenderTemplateActionParams,
-  IControllerSendActionParams,
-  IControllerReceiveActionParams,
-  IControllerRenderActionParams,
-} from "../types";
+
+export interface IControllerConnectionData {
+  id: string;
+  portal: string;
+  [key: string]: any;
+}
+
+export interface IControllerActionParams {
+  id: string;
+}
+
+export interface IControllerContext<P> extends Context<P> {
+  connection?: IControllerConnectionData;
+}
+
+export interface IControllerReceiveActionParams
+  extends IControllerSendActionParams {}
+
+export interface IControllerRenderActionParams extends IControllerActionParams {
+  props: any;
+  content: React.FunctionComponent;
+}
+
+export interface IControllerRenderTemplateActionParams
+  extends IControllerActionParams {
+  template: string;
+  props: any;
+}
+
+export interface IControllerSendActionParams extends IControllerActionParams {
+  data: string;
+}
 
 class InkBuffer extends EventEmitter {
   readonly columns: number;

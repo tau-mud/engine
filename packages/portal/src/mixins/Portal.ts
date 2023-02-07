@@ -1,15 +1,27 @@
-import Moleculer, { Context, Errors, Service, ServiceBroker } from "moleculer";
+import Moleculer, {
+  ActionSchema,
+  Context,
+  Errors,
+  Service,
+  ServiceActionsSchema,
+  ServiceBroker,
+} from "moleculer";
 import { types } from "@tau-mud/core";
 
 import { get } from "lodash";
 import { ServiceMixin } from "@tau-mud/core/lib/ServiceMixin";
+
 import {
-  IPortalActionParams,
-  IPortalGetMetadataActionParams,
-  IPortalMergeMetadataActionParams,
-  IPortalSetControllerActionParams,
-  IPortalWriteActionParams,
-} from "types";
+  IDeleteMetadataActionParams,
+  IGetAllMetadataActionParams,
+  IGetMetadataActionParams,
+  IMergeMetadataActionParams,
+  IOnSocketDataActionParams,
+  ISetMetadataActionParams,
+  ISocketActionParams,
+  IWriteActionParams,
+} from "moleculer-telnet";
+import { TTauServiceConstructor } from "@tau-mud/core/lib/types";
 
 const packageJson = require("../../package.json");
 
@@ -18,10 +30,82 @@ interface IErrorMeta {
 }
 
 /**
- * The PortalMixin is a mixin that can be used to create a portal service. A portal service is a service that provides
+ * The parameters for the {@link Portal} connection callbacks.
+ */
+export interface IPortalActionParams extends ISocketActionParams {}
+
+/**
+ * The `deleteMetadata` action parameters.
+ */
+export interface IPortalDeleteMetadataActionParams
+  extends IDeleteMetadataActionParams {}
+
+/**
+ * The parameters for the {@link Portal} `getAllMetadata` action.
+ */
+export interface IPortalGetAllMetadataActionParams
+  extends IGetAllMetadataActionParams {}
+
+/**
+ * The parameters for the {@link Portal} `getMetadata` action.
+ */
+export interface IPortalGetMetadataActionParams
+  extends IGetMetadataActionParams {}
+
+/**
+ * The parameters for the {@link Portal} `mergeMetadata` action.
+ */
+export interface IPortalMergeMetadataActionParams
+  extends IMergeMetadataActionParams {}
+
+/**
+ * The parameters for the {@link Portal} `onData` action.
+ */
+export interface IPortalOnDataActionParams extends IOnSocketDataActionParams {}
+
+interface IPortalActionSchema extends ServiceActionsSchema {
+  write: ActionSchema;
+  getMetadata: ActionSchema;
+  setMetadata: ActionSchema;
+  echoOn: ActionSchema;
+  echoOff: ActionSchema;
+}
+
+/**
+ * Implement this schema to create a portal service.
+ */
+export interface IPortalServiceSchema extends types.ITauServiceSchema {
+  actions: IPortalActionSchema;
+  mixins: types.TTauServiceMixins;
+}
+
+/**
+ * The parameters for the {@link PortalMixin} `setMetadata` action.
+ */
+export interface IPortalSetMetadataActionParams
+  extends ISetMetadataActionParams {}
+
+/**
+ *
+ * The parameters for the {@link PortalMixin} `write` actions.
+ */
+export interface IPortalWriteActionParams extends IWriteActionParams {}
+
+/**
+ * The parameters for the {@link PortalMixin} `setController` action.
+ */
+export interface IPortalSetControllerActionParams extends IPortalActionParams {
+  /**
+   * The name of the controller to set.
+   */
+  controller: string;
+}
+
+/**
+ * The Portal is a mixin that can be used to create a portal service. A portal service is a service that provides
  * the ability for a client to connect to the MUD. The portal service is responsible for maintaining the connection to
  * the client and providing the ability for the client to send and receive data from the game world. It also is
- * responsible for maintaining the state of the client via the `metadata` property. The `PortalMixin` already mixes in
+ * responsible for maintaining the state of the client via the `metadata` property. The `Portal` already mixes in
  * the Tau `ServiceMixin` so it is not necessary to mix in both. The Portal settings can be set within the game
  * configuration under the `portal` key. Example:
  *
@@ -52,32 +136,32 @@ interface IErrorMeta {
  * #### Actions
  * | Action | Parameters | Description |
  * | ------ | ---------- | ----------- |
- * | `write` | {@link types.IWriteActionParams} | Writes data to the client. Does not append a newline. This action must be overridden by the service that mixes the PortalMixin. |
- * | `writeLine` | {@link types.IWriteActionParams} | Writes data to the client and appends a newline. |
- * | `writeLines` | {@link types.IWriteActionParams} | Accepts a message and breaks it up by line, writing each line to the client. |
- * | `onData` | {@link types.IConnectionActionParams} | Called when a client sends data to the portal. This action should be called by service that mixes the PortalMixin when a client sends data. |
- * | `onConnect` | {@link types.IConnectionActionParams} | Called when a client connects to the portal. This action should be called by service that mixes the PortalMixin when a client connects. |
- * | `onDisconnect` | {@link types.IConnectionActionParams} | Called when a client disconnects from the portal. This action should be called by service that mixes the PortalMixin when a client disconnects.  |
- * | `onTimeout` | {@link types.IConnectionActionParams} | Called when a client times out from the portal. This action should be called by service that mixes the PortalMixin when a client timeout occurs. |
- * | `getMetadata` | {@link types.IGetMetadataActionParams} | Gets the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
- * | `getAllMetadata` | {@link types.IConnectionActionParams} | Gets all metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
- * | `setMetadata` | {@link types.ISetMetadataActionParams} | Sets the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
- * | `deleteMetadata` | {@link types.IDeleteMetadataActionParams} | Deletes the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
- * | `setController` | {@link types.ISetMetadataActionParams} | Sets the controller for the connection. This will emit the `portal.controller.set` event. |
+ * | `write` | {@link IWriteActionParams} | Writes data to the client. Does not append a newline. This action must be overridden by the service that mixes the Portal. |
+ * | `writeLine` | {@link IWriteActionParams} | Writes data to the client and appends a newline. |
+ * | `writeLines` | {@link IWriteActionParams} | Accepts a message and breaks it up by line, writing each line to the client. |
+ * | `onData` | {@link IConnectionActionParams} | Called when a client sends data to the portal. This action should be called by service that mixes the Portal when a client sends data. |
+ * | `onConnect` | {@link IConnectionActionParams} | Called when a client connects to the portal. This action should be called by service that mixes the Portal when a client connects. |
+ * | `onDisconnect` | {@link IConnectionActionParams} | Called when a client disconnects from the portal. This action should be called by service that mixes the Portal when a client disconnects.  |
+ * | `onTimeout` | {@link IConnectionActionParams} | Called when a client times out from the portal. This action should be called by service that mixes the Portal when a client timeout occurs. |
+ * | `getMetadata` | {@link IGetMetadataActionParams} | Gets the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
+ * | `getAllMetadata` | {@link IConnectionActionParams} | Gets all metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
+ * | `setMetadata` | {@link ISetMetadataActionParams} | Sets the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
+ * | `deleteMetadata` | {@link IDeleteMetadataActionParams} | Deletes the metadata for the connection. The developer is responsible for implementing the method by which a connections metadata is stored and retrieved. |
+ * | `setController` | {@link ISetMetadataActionParams} | Sets the controller for the connection. This will emit the `portal.controller.set` event. |
  *
  * #### Events
  * | Event | Parameters | Description |
  * | ----- | ---------- | ----------- |
- * | `portal.connected` | {@link types.IConnectionActionParams} | Emitted when a client connects to the portal. |
- * | `portal.disconnected` | {@link types.IConnectionActionParams} | Emitted when a client disconnects from the portal. |
- * | `portal.timeout` | {@link types.IConnectionActionParams} | Emitted when a client times out from the portal. |
- * | `portal.metadata.set` | {@link types.IGetMetadataActionParams} | Emitted when a client's metadata is set. |
- * | `portal.metadata.deleted` | {@link types.IDeleteMetadataActionParams} | Emitted when a client's metadata is deleted. |
- * | `portal.controller.set` | {@link types.ISetMetadataActionParams} | Emitted when a client's controller is set. |
+ * | `portal.connected` | {@link IConnectionActionParams} | Emitted when a client connects to the portal. |
+ * | `portal.disconnected` | {@link IConnectionActionParams} | Emitted when a client disconnects from the portal. |
+ * | `portal.timeout` | {@link IConnectionActionParams} | Emitted when a client times out from the portal. |
+ * | `portal.metadata.set` | {@link IGetMetadataActionParams} | Emitted when a client's metadata is set. |
+ * | `portal.metadata.deleted` | {@link IDeleteMetadataActionParams} | Emitted when a client's metadata is deleted. |
+ * | `portal.controller.set` | {@link ISetMetadataActionParams} | Emitted when a client's controller is set. |
  *
  *
  */
-export const Portal: types.TTauServiceConstructor = (mudSettings) => ({
+export const Portal: TTauServiceConstructor = (mudSettings) => ({
   mixins: [ServiceMixin],
   settings: {
     defaultController: get(mudSettings, "portal.defaultController", "motd"),
@@ -110,7 +194,7 @@ export const Portal: types.TTauServiceConstructor = (mudSettings) => ({
         id: "string",
       },
       hooks: {
-        async after(this: Service, ctx: Context<{ id: string }>) {
+        async after(this: Service, ctx: Context<IDeleteMetadataActionParams>) {
           await this.broker.emit("portal.metadata.deleted", {
             id: ctx.params.id,
           });

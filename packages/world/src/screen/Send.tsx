@@ -1,17 +1,23 @@
 import { defaultsDeep } from "lodash";
 import React, { PropsWithChildren, useContext } from "react";
+import { Props } from "ink/build/components/Text";
 
-import { IScreenSendProps } from "../types";
 import { MXPTag } from "./MXPTag";
 import { Text } from "./Text";
 import { ThemeContext } from "./WithTheme";
 
-export const Send = (props: PropsWithChildren<IScreenSendProps>) => {
+export interface ISendProps extends Props {
+  href: string;
+  hint?: string;
+  expire?: string;
+}
+
+export const Send = (props: PropsWithChildren<ISendProps>) => {
   const { children, href, hint, expire, ...rest } = props;
 
   const theme = useContext(ThemeContext);
 
-  const tagProps: IScreenSendProps = { href };
+  const tagProps: ISendProps = { href };
 
   if (hint) {
     tagProps.hint = hint;
