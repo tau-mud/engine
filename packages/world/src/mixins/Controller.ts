@@ -1,4 +1,4 @@
-import { types, mixins } from "@tau-mud/core";
+import { mixins, config, ITauServiceSchema } from "@tau-mud/core";
 import { Context, Errors, Service } from "moleculer";
 import EventEmitter from "events";
 import { render } from "ink";
@@ -57,7 +57,7 @@ class InkBuffer extends EventEmitter {
   }
 }
 
-export const Controller: types.ITauServiceSchema = {
+export const Controller: ITauServiceSchema = {
   name: "controller",
   mixins: [mixins.Service],
   hooks: {

@@ -1,6 +1,7 @@
 import { get } from "lodash";
 import { Service as MoleculerService, ServiceSchema } from "moleculer";
-import { ITauConfig } from "../types/ITauConfig";
+import { ITauConfig } from "../config";
+import { ITauServiceSchema } from "../ITauServiceSchema";
 
 /**
  * The ServiceMixin is a Moleculer mixin that provides a few utility functions for services.
@@ -11,7 +12,7 @@ import { ITauConfig } from "../types/ITauConfig";
  * | `getMudSetting` | `key: string, `defaultValue: any` | Returns the MUD setting identified by the provided key. |
  * | `getMudSettings` | | Returns the MUD settings. |
  */
-export const Service: ServiceSchema = {
+export const Service: ITauServiceSchema = {
   name: "service",
 
   methods: {

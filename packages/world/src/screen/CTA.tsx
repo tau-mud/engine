@@ -1,7 +1,8 @@
 import React, { useContext, PropsWithChildren } from "react";
+import { defaultsDeep } from "lodash";
+
 import { ITextProps, Text } from "./Text";
 import { ThemeContext } from "./WithTheme";
-import { defaultsDeep } from "lodash";
 
 export const CTA = (props: PropsWithChildren<ITextProps>) => {
   const { children, ...rest } = props;

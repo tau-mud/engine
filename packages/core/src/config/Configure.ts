@@ -1,16 +1,52 @@
-import {
-  BrokerOptions,
-  Service,
-  ServiceBroker,
-  ServiceSchema,
-} from "moleculer";
+import { BrokerOptions, ServiceBroker, ServiceSchema } from "moleculer";
 import { defaultsDeep } from "lodash";
-import { RedisClientOptions } from "redis";
+import { RedisOptions } from "ioredis";
 
-import { Plugin } from "../Plugin";
+import { Plugin, TTauPluginServiceListEntries } from "../Plugin";
 import { ServiceFactory } from "./ServiceFactory";
-import { ITauConfig } from "../types/ITauConfig";
-import { TTauPluginServiceList } from "../types/TTauPluginServiceList";
+
+/**
+ * The MUD settings interface. This is a simple key/value object that can be used to store any settings that are
+ * required by the MUD.
+ */
+export interface IMudSettings {
+  redis: RedisOptions;
+  [key: string]: any;
+}
+
+/**
+ * Configuration options for the Tau MUD Engine. The configuration is provided in the games `config/<process>.config.ts`
+ * files, where `process` is the name of the process being run. This allows for separate configuration for each process.
+ */
+export interface ITauConfig<S = IMudSettings> extends BrokerOptions {
+  /**
+   * The name of the process that is being run.
+   */
+  processName?: string;
+
+  /**
+   * A list of plugins to load. The plugins will be loaded in the order they are provided.
+   */
+  plugins: Array<typeof Plugin>;
+
+  settings?: Partial<S>;
+}
+
+/**
+ * The ITauRedisOptions interface is a simple interface that extends the RedisOptions interface from the ioredis package.
+ * This interface is used to provide the RedisOptions to MUD engine.
+ */
+export interface ITauRedisOptions extends RedisOptions {
+  /**
+   * The host name of the Redis server.
+   */
+  host: string;
+
+  /**
+   * The port number of the Redis server.
+   */
+  port: number;
+}
 
 /**
  * Configure a Tau MUD Engine process. If `baseConfig` is provided, it is merged with the config using
@@ -49,16 +85,22 @@ export function Configure(
 
           if (plug.created) {
             broker.logger.info(`Calling 'created' for plugin '${plugin.name}'`);
-            plug.created();
+            plug.created(broker).catch((err: Error) => {
+              broker.logger.fatal(
+                `Error creating plugin '${plugin.name}'`,
+                err
+              );
+              process.exit(1);
+            });
           }
         });
       },
 
-      started(broker: ServiceBroker) {
+      async started(broker: ServiceBroker) {
         const options: ITauConfig = <ITauConfig>broker.options;
 
         const plugins = options.plugins || [];
-        let servicesToCreate: TTauPluginServiceList = {};
+        let servicesToCreate: TTauPluginServiceListEntries = {};
 
         broker.logger.info(`calling 'started' for ${plugins.length} plugins`);
 
@@ -67,7 +109,13 @@ export function Configure(
           const plug = new plugin(broker);
 
           if (plug.started) {
-            plug.started();
+            plug.started(broker).catch((err: Error) => {
+              broker.logger.fatal(
+                `Error starting plugin '${plugin.name}'`,
+                err
+              );
+              process.exit(1);
+            });
           }
 
           if (plug.services && options.processName) {
@@ -107,7 +155,13 @@ export function Configure(
           const plug = new plugin(broker);
 
           if (plug.stopped) {
-            plug.stopped();
+            plug.stopped(broker).catch((err: Error) => {
+              broker.logger.fatal(
+                `Error stopping plugin '${plugin.name}'`,
+                err
+              );
+              process.exit(1);
+            });
           }
         });
       },

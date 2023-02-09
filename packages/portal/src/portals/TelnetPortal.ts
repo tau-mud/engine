@@ -4,6 +4,8 @@ import {
   TelnetOptionHandler,
   OPTIONS as TELOPTS,
 } from "moleculer-telnet";
+import { get } from "lodash";
+import { Context, Service } from "moleculer";
 
 import {
   IPortalActionParams,
@@ -12,9 +14,9 @@ import {
   IPortalWriteActionParams,
   Portal,
 } from "../mixins";
-import { get } from "lodash";
-import { Context, Service } from "moleculer";
-import { IPortalSettings, TPortalServiceConstructor } from "../types";
+
+import { IPortalSettings, ITelnetClientOptions } from "../IPortalSettings";
+import { TPortalServiceConstructor } from "../TPortalServiceConstructor";
 
 const OPTIONS = {
   MXP: 91,

@@ -72,7 +72,7 @@ export const LoginController = {
       }
 
       if (flash.step === "password") {
-        const accountRecords = (await ctx.call("data.accounts.find", {
+        const accountRecords = (await ctx.call("accounts.find", {
           query: {
             usernameStub: flash.account.usernameStub,
           },

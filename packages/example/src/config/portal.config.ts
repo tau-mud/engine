@@ -1,8 +1,8 @@
-import { types, config } from "@tau-mud/core";
+import { config } from "@tau-mud/core";
 
 import base from "./base.config";
 
-const portal: Partial<types.ITauConfig> = {
+const portal: Partial<config.ITauConfig> = {
   processName: "portal",
   settings: {
     telnet: {

@@ -1,4 +1,4 @@
-import { types } from "@tau-mud/core";
+import { ITauServiceSchema } from "@tau-mud/core";
 import React from "react";
 import { Context, Service } from "moleculer";
 
@@ -18,7 +18,7 @@ interface IAccountDetails {
   };
 }
 
-export const CreateAccountController: types.ITauServiceSchema = {
+export const CreateAccountController: ITauServiceSchema = {
   name: "controllers.createAccount",
   mixins: [Controller],
   templates: {
@@ -111,7 +111,7 @@ export const CreateAccountController: types.ITauServiceSchema = {
           ctx.params.data.toLowerCase() === "y" ||
           ctx.params.data.toLowerCase() === "yes"
         ) {
-          await ctx.call("data.accounts.create", flash.account);
+          await ctx.call("accounts.create", flash.account);
           await this.actions.renderTemplate({
             id: ctx.params.id,
             template: "accountCreated",
@@ -151,7 +151,7 @@ export const CreateAccountController: types.ITauServiceSchema = {
         [step]: ctx.params.data,
       };
 
-      const validation: string = await ctx.call("data.accounts.validate", {
+      const validation: string = await ctx.call("accounts.validate", {
         field: step,
         account: account,
       });

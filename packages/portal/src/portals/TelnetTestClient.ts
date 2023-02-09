@@ -1,7 +1,6 @@
 import EventEmitter from "events";
 import { Socket } from "net";
 import { COMMANDS, OPTIONS } from "moleculer-telnet";
-import { ITelnetClientOptions } from "../types";
 
 abstract class TelnetOptionHandler {
   abstract match(sequence: Buffer): boolean;
@@ -64,7 +63,7 @@ export class TelnetTestClient extends EventEmitter {
    * @param port The port to connect to.
    * @param options The options to use for the Telnet connection.
    */
-  constructor(host: string, port: number, options: ITelnetClientOptions = {}) {
+  constructor(host: string, port: number, options: any = {}) {
     super();
     this.host = host;
     this.port = port;

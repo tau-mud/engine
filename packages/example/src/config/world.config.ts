@@ -1,9 +1,9 @@
-import { config, types as coreTypes } from "@tau-mud/core";
-import { types as worldTypes } from "@tau-mud/world";
+import { config } from "@tau-mud/core";
+import { IWorldSettings } from "@tau-mud/world";
 
 import base from "./base.config";
 
-const world: Partial<coreTypes.ITauConfig<worldTypes.IWorldSettings>> = {
+const world: Partial<config.ITauConfig<IWorldSettings>> = {
   processName: "world",
   settings: {
     theme: {

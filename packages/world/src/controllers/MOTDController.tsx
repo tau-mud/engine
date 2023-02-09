@@ -6,9 +6,9 @@ import {
   IControllerContext,
 } from "../mixins";
 import { Box, Text, GameName } from "../screen";
-import { types } from "@tau-mud/core";
+import { ITauServiceSchema } from "@tau-mud/core";
 
-export const MOTDController: types.ITauServiceSchema = {
+export const MOTDController: ITauServiceSchema = {
   name: "controllers.motd",
   mixins: [Controller],
   templates: {

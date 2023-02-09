@@ -1,4 +1,4 @@
-import { TWorldServiceConstructor } from "../types";
+import { TWorldServiceConstructor } from "../TWorldServiceConstructor";
 
 export const Component = (
   component: string,

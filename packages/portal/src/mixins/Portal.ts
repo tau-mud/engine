@@ -6,10 +6,14 @@ import Moleculer, {
   ServiceActionsSchema,
   ServiceBroker,
 } from "moleculer";
-import { types } from "@tau-mud/core";
+import {
+  ITauServiceSchema,
+  mixins,
+  TTauServiceConstructor,
+  TTauServiceMixins,
+} from "@tau-mud/core";
 
 import { get } from "lodash";
-import { ServiceMixin } from "@tau-mud/core/lib/ServiceMixin";
 
 import {
   IDeleteMetadataActionParams,
@@ -21,7 +25,6 @@ import {
   ISocketActionParams,
   IWriteActionParams,
 } from "moleculer-telnet";
-import { TTauServiceConstructor } from "@tau-mud/core/lib/types";
 
 const packageJson = require("../../package.json");
 
@@ -74,9 +77,9 @@ interface IPortalActionSchema extends ServiceActionsSchema {
 /**
  * Implement this schema to create a portal service.
  */
-export interface IPortalServiceSchema extends types.ITauServiceSchema {
+export interface IPortalServiceSchema extends ITauServiceSchema {
   actions: IPortalActionSchema;
-  mixins: types.TTauServiceMixins;
+  mixins: TTauServiceMixins;
 }
 
 /**
@@ -162,7 +165,7 @@ export interface IPortalSetControllerActionParams extends IPortalActionParams {
  *
  */
 export const Portal: TTauServiceConstructor = (mudSettings) => ({
-  mixins: [ServiceMixin],
+  mixins: [mixins.Service],
   settings: {
     defaultController: get(mudSettings, "portal.defaultController", "motd"),
   },

@@ -1,6 +1,18 @@
 import { ServiceBroker } from "moleculer";
 import { get } from "lodash";
-import { TTauPluginProcessServiceList } from "./types/TTauPluginProcessServiceList";
+import { ITauServiceSchema } from "./ITauServiceSchema";
+import { TTauServiceConstructor } from "./TTauServiceConstructor";
+import { ITauConfig } from "./config";
+
+export type TTauPluginServiceListEntries = Record<
+  string,
+  ITauServiceSchema | TTauServiceConstructor
+>;
+
+export type TTauPluginServiceList = Record<
+  string,
+  TTauPluginServiceListEntries
+>;
 
 /**
  * This class is used to define a Plugin for the Tau MUD Engine. Plugins are the primary way to extend the engine
@@ -9,6 +21,7 @@ import { TTauPluginProcessServiceList } from "./types/TTauPluginProcessServiceLi
  */
 export class Plugin {
   readonly name: string = "plugin";
+
   /**
    * The Moleculer Service Broker.
    */
@@ -36,22 +49,28 @@ export class Plugin {
    *   }
    * ```
    */
-  readonly services: TTauPluginProcessServiceList = {};
+  readonly services: TTauPluginServiceList = {};
 
   /**
    * The created callback is called when the broker is created. It is called before the broker starts.
    */
-  created?: () => void;
+  async created(_broker: ServiceBroker) {
+    return Promise.resolve();
+  }
 
   /**
    * The started callback is called when the broker is started. It is called after the broker has started.
    */
-  started?: () => void;
+  async started(_broker: ServiceBroker) {
+    return Promise.resolve();
+  }
 
   /**
    * The stopped callback is called when the broker is stopped. It is called after the broker has stopped.
    */
-  stopped?: () => void;
+  async stopped(_broker: ServiceBroker) {
+    return Promise.resolve();
+  }
 
   /**
    * getSetting is a helper function to get a setting from the MUD's settings.
@@ -60,6 +79,9 @@ export class Plugin {
    * @param defaultValue The default value to return if the setting is not found.
    */
   getSetting(key: string, defaultValue?: any): any {
-    return get(this.broker.settings, key, defaultValue);
+    const options = this.broker.options as ITauConfig;
+    const settings = options.settings;
+
+    return get(settings, key, defaultValue);
   }
 }

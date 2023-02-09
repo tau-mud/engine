@@ -1,8 +1,9 @@
-import { TWorldServiceConstructor } from "../types";
-import { Mongo } from "../mixins";
-import { Account } from "../models";
 import { Context } from "moleculer";
 import { Error } from "mongoose";
+
+import { TWorldServiceConstructor } from "../TWorldServiceConstructor";
+import { Mongo } from "../mixins";
+import { Account } from "../models";
 
 export interface IAccountsValidateActionParams {
   account: {
@@ -15,7 +16,7 @@ export interface IAccountsValidateActionParams {
 }
 
 export const Accounts: TWorldServiceConstructor = (mudSettings) => ({
-  name: "data.accounts",
+  name: "accounts",
   mixins: [Mongo],
   model: Account,
   actions: {

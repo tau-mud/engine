@@ -1,12 +1,12 @@
 {
   "extends": "build-configs/tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "./build",
+    "outDir": "./lib",
     "rootDir": "./src",
     "baseUrl": "./src",
   },
   "exclude": [
     "node_modules",
-    "build"
+    "lib"
   ]
 }

@@ -1,4 +1,4 @@
-import { types } from "@tau-mud/core";
+import { ITauServiceSchema } from "@tau-mud/core";
 import { Context } from "moleculer";
 
 import { defaultsDeep } from "lodash";
@@ -22,7 +22,7 @@ export interface IConnectionsRegisterConnectionActionParams
  * The ConnectionRegistry service is responsible for simply tracking connections across all portals, providing a common
  * service to access connection metadata so that the portal for each connection does not need to be known by the world.
  */
-export const Connections: types.ITauServiceSchema = {
+export const Connections: ITauServiceSchema = {
   actions: {
     deleteMetadata: {
       params: {

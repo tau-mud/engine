@@ -1,7 +1,8 @@
-import { config, types } from "@tau-mud/core";
+import { config } from "@tau-mud/core";
 import { Boxes } from "cli-boxes";
 
-import { ITextProps } from "../screen";
+import { ITextProps } from "./screen";
+import { IComponentConstructor } from "./Component";
 
 export interface ITheme {
   /**
@@ -24,7 +25,7 @@ export interface ITheme {
 /**
  * World specific settings.
  */
-export interface IWorldSettings extends types.IMudSettings {
+export interface IWorldSettings extends config.IMudSettings {
   /**
    * The theme to use for the game output.
    */
@@ -34,4 +35,6 @@ export interface IWorldSettings extends types.IMudSettings {
    * The URL to the mongo database.
    */
   mongoUrl: string;
+
+  components?: Array<IComponentConstructor>;
 }

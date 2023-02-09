@@ -1,4 +1,4 @@
-import { IMudSettings } from "./IMudSettings";
+import { IMudSettings } from "./config";
 import { ITauServiceSchema } from "./ITauServiceSchema";
 
 /**

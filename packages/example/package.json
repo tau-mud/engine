@@ -17,6 +17,8 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "clean": "rm -rf build",
+    "repl": "moleculer-runner -c build/config/repl.config.js --repl",
     "portal": "moleculer-runner -c build/config/portal.config.js",
     "world": "moleculer-runner -c build/config/world.config.js",
     "test": "node ./__tests__/@tau-mud/example.test.js"
@@ -25,6 +27,7 @@
     "@tau-mud/core": "*",
     "@tau-mud/portal": "*",
     "@tau-mud/world": "*",
+    "@tau-mud/pf": "*",
     "module-alias": "^2.2.2",
     "moleculer": "^0.14.28",
     "tsconfig-paths": "^4.1.2"

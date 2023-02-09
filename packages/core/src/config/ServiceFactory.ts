@@ -1,8 +1,8 @@
 import { Service as MoleculerService, ServiceBroker } from "moleculer";
-import { TTauServiceConstructor } from "../types";
-import { ITauServiceSchema } from "../types/ITauServiceSchema";
-import { IMudSettings } from "../types/IMudSettings";
-import { ITauConfig } from "../types/ITauConfig";
+
+import { ITauServiceSchema, TTauServiceMixins } from "../ITauServiceSchema";
+import { TTauServiceConstructor } from "../TTauServiceConstructor";
+import { IMudSettings, ITauConfig } from "./Configure";
 
 /**
  * @private
