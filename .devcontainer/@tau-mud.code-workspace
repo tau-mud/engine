@@ -1,0 +1,14 @@
+{
+	"folders": [
+    {
+      "path": ".."
+    },
+    {
+      "path": "../../moleculer-tcp"
+    },
+    {
+      "path": "../../moleculer-telnet"
+    }
+  ],
+  "settings": {}
+}
