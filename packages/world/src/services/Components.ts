@@ -3,7 +3,7 @@ import { ITauServiceSchema } from "@tau-mud/core";
 
 import { Component, IComponentConstructor } from "../Component";
 import { IComponentAttributes } from "../models";
-import { Mongo } from "mixins";
+import { Mongo } from "../mixins";
 
 interface IComponentService extends Service {
   componentTypes: Record<string, typeof Component>;
@@ -27,7 +27,6 @@ export const ComponentTypes: ITauServiceSchema = {
   mixins: [Mongo],
 
   actions: {
-
     register: {
       params: {
         component: "any",

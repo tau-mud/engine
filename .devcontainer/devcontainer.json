@@ -12,14 +12,18 @@
     "codespaces": {
       "repositories": {
         "fugufish/moleculer-tcp": {
-          "permissions": "write-all"
+          "permissions": {
+            "contents": "write"
+          }
         },
         "fugufish/moleculer-telnet": {
-          "permissions": "write-all"
+          "permissions": {
+            "contents": "write"
+          }
         }
       }
     }
-  }
+  },
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
