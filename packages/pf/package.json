@@ -1,0 +1,47 @@
+{
+  "name": "@tau-mud/pf",
+  "version": "0.0.0",
+  "description": "Tau MUD Engine Ruleset",
+  "author": "Jarod <therealfugu@gmail.com>",
+  "homepage": "https://github.com/tau-mud/engine#readme",
+  "license": "MIT",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tau-mud/engine.git"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "watch": "tsc -w --project tsconfig.json && tscpaths -p tsconfig.json ./src -o ./lib"
+  },
+  "bugs": {
+    "url": "https://github.com/tau-mud/engine/issues"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
+    "@types/jest": "^29.4.0",
+    "@types/mongoose": "^5.11.97",
+    "@types/node": "^18.11.18",
+    "build-configs": "*",
+    "jest": "^29.4.1",
+    "ts-jest": "^29.0.5",
+    "tscpaths": "^0.0.9",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "@tau-mud/world": "*",
+    "@tau-mud/core": "*",
+    "moleculer": "^0.14.28"
+  }
+}

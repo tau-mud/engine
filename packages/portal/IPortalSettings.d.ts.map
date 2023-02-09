@@ -1,0 +1,1 @@
+{"version":3,"file":"IPortalSettings.d.ts","sourceRoot":"","sources":["IPortalSettings.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,EAAE,MAAM,eAAe,CAAC;AACtC,OAAO,EAAE,oBAAoB,EAAE,MAAM,wBAAwB,CAAC;AAE9D;;GAEG;AACH,MAAM,WAAW,eAAgB,SAAQ,KAAK,CAAC,YAAY;IACzD,MAAM,CAAC,EAAE,oBAAoB,CAAC;CAC/B"}
