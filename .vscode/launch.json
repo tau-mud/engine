@@ -36,7 +36,7 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
         "run",
-        "watch"
+        "packages:watch"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal",

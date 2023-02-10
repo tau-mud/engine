@@ -1,6 +1,7 @@
 import { Context, Errors, Service } from "moleculer";
 import { ITauServiceSchema } from "@tau-mud/core";
 
+import { Component as ComponentModel } from "../models";
 import { Component, IComponentConstructor } from "../Component";
 import { IComponentAttributes } from "../models";
 import { Mongo } from "../mixins";
@@ -25,6 +26,7 @@ export const ComponentTypes: ITauServiceSchema = {
   },
 
   mixins: [Mongo],
+  model: ComponentModel,
 
   actions: {
     register: {

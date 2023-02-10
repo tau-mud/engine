@@ -12,10 +12,10 @@ export class PFPlugin extends Plugin {
       return;
     }
 
-    await broker.waitForServices(["component-types"]);
+    await broker.waitForServices(["components"]);
 
     for (const component of Object.values(components)) {
-      await broker.call("component-types.register", { component });
+      await broker.call("components.register", { component });
     }
   }
 }
