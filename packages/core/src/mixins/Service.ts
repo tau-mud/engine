@@ -3,6 +3,10 @@ import { Service as MoleculerService, ServiceSchema } from "moleculer";
 import { ITauConfig } from "../config";
 import { ITauServiceSchema } from "../ITauServiceSchema";
 
+export interface ITauService extends MoleculerService {
+  getMudSetting(key: string, defaultValue?: any): any;
+}
+
 /**
  * The ServiceMixin is a Moleculer mixin that provides a few utility functions for services.
  *

@@ -16,9 +16,9 @@ export class WorldPlugin extends Plugin {
     const options = broker.options as config.ITauConfig;
     const processName = options.processName;
 
-    if (processName !== "world") {
-      return;
-    }
+  if (processName !== "world") {
+    return;
+  }
 
     await broker.waitForServices(["components"]);
 

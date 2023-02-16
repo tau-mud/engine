@@ -3,6 +3,7 @@ import { Box as InkBox, BoxProps as InkBoxProps } from "ink";
 
 import { ConnectionContext } from "./WithConnection";
 import { ThemeContext } from "./WithTheme";
+import { Errors } from "moleculer";
 
 /**
  * The Props for the Box component.
@@ -38,6 +39,14 @@ export const Box = (props: PropsWithChildren<IBoxProps>) => {
   const connection = useContext(ConnectionContext);
   const theme = useContext(ThemeContext);
   const { children, full, vCenter, hCenter, center, border, ...rest } = props;
+
+  if (!connection) {
+    throw new Errors.MoleculerError(
+      "Connection data not set.",
+      500,
+      "E_CONNECTION_DATA_NOT_SET"
+    );
+  }
 
   if (theme) {
     if (border) {

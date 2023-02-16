@@ -1,9 +1,12 @@
 import { config } from "@tau-mud/core";
 import { IWorldSettings } from "@tau-mud/world";
+import { helps as pfHelps, IPFSettings } from "@tau-mud/pf";
 
 import base from "./base.config";
 
-const world: Partial<config.ITauConfig<IWorldSettings>> = {
+interface ISettings extends IWorldSettings, IPFSettings {}
+
+const world: Partial<config.ITauConfig<IPFSettings>> = {
   processName: "world",
   settings: {
     theme: {
@@ -26,6 +29,9 @@ const world: Partial<config.ITauConfig<IWorldSettings>> = {
       },
     },
     mongoUrl: process.env.TAU_MONGO_URL || "mongodb://localhost:27017",
+    helps: {
+      ...pfHelps,
+    },
   },
 };
 

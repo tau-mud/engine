@@ -40,8 +40,10 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
-    "@tau-mud/world": "*",
+    "@mdx-js/node-loader": "^2.3.0",
     "@tau-mud/core": "*",
+    "@tau-mud/world": "*",
+    "mdx.macro": "^0.2.9",
     "moleculer": "^0.14.28"
   }
 }

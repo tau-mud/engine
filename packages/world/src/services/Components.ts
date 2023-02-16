@@ -10,14 +10,33 @@ interface IComponentService extends Service {
   componentTypes: Record<string, typeof Component>;
 }
 
-export interface IComponentTypesRegisterActionParams {
+export interface IComponentsRegisterActionParams {
   component: IComponentConstructor;
 }
 
-export interface IComponentTypesBuildActionParams {
-  type: string;
+export interface IComponentsBuildActionParams {
   component: IComponentAttributes;
 }
+
+export interface IComponentsValidateActionParams {
+  component: IComponentAttributes;
+}
+
+export interface IComponentsValidateFieldActionParams {
+  component: IComponentAttributes;
+  field: string;
+}
+
+const COMPONENT_PROPS = {
+  type: "object",
+  props: {
+    value: "any",
+    entityId: {
+      type: "string",
+      optional: true,
+    },
+  },
+};
 
 export const ComponentTypes: ITauServiceSchema = {
   name: "components",
@@ -29,6 +48,34 @@ export const ComponentTypes: ITauServiceSchema = {
   model: ComponentModel,
 
   actions: {
+    validate: {
+      params: {
+        component: COMPONENT_PROPS,
+      },
+      protected: true,
+      async handler(ctx: Context<IComponentsValidateActionParams>) {
+        const { component } = ctx.params;
+
+        const builtComponent = await this.actions.build(ctx.params);
+
+        return builtComponent.validate();
+      },
+    },
+
+    validateField: {
+      params: {
+        component: COMPONENT_PROPS,
+      },
+      protected: true,
+      async handler(ctx: Context<IComponentsValidateFieldActionParams>) {
+        const { component, field } = ctx.params;
+
+        const validations = await this.actions.validate({ component });
+
+        return validations[field];
+      },
+    },
+
     register: {
       params: {
         component: "any",
@@ -36,7 +83,7 @@ export const ComponentTypes: ITauServiceSchema = {
       protected: true,
       async handler(
         this: IComponentService,
-        ctx: Context<IComponentTypesRegisterActionParams>
+        ctx: Context<IComponentsRegisterActionParams>
       ) {
         const { component } = ctx.params;
 
@@ -64,29 +111,31 @@ export const ComponentTypes: ITauServiceSchema = {
               type: "string",
               optional: true,
             },
+            componentType: "string",
           },
         },
       },
       protected: true,
       handler(
         this: IComponentService,
-        ctx: Context<IComponentTypesBuildActionParams>
+        ctx: Context<IComponentsBuildActionParams>
       ) {
-        const { type, component } = ctx.params;
+        const { component } = ctx.params;
 
-        const componentType = this.componentTypes[type];
+        const componentTypeConstructor =
+          this.componentTypes[component.componentType];
 
-        if (!componentType) {
+        if (!componentTypeConstructor) {
           throw new Errors.MoleculerError(
-            `Component type not found: ${type}`,
+            `Component type not found: ${component.componentType}`,
             400,
             "BAD_REQUEST"
           );
         }
 
-        return new componentType({
+        return new componentTypeConstructor({
           ...component,
-          componentType: componentType.name,
+          componentType: componentTypeConstructor.name,
         });
       },
     },

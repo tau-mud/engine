@@ -37,6 +37,9 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "@cmdlucas/markdown-metadata": "^1.0.7",
+    "@mdx-js/node-loader": "^2.3.0",
+    "@mdx-js/register": "^2.3.0",
     "@tau-mud/core": "*",
     "bcrypt": "^5.1.0",
     "cli-boxes": "^3.0.0",

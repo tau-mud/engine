@@ -96,7 +96,7 @@ export const LoginController = {
           if (isMatch) {
             return ctx.call("connections.setController", {
               id: ctx.params.id,
-              controller: "main",
+              controller: "create-character",
             });
           } else {
             await this.actions.renderTemplate({
