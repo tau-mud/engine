@@ -14,13 +14,20 @@ export const CommandController: ITauServiceSchema = {
   actions: {
     receive: {
       async handler(ctx: IControllerContext<IControllerReceiveActionParams>) {
-        const { data, id } = ctx.params;
+        const { data } = ctx.params;
 
         const command = data.trim();
+
         const success = await ctx.call("command-sets.execute", {
           id: ctx.params.id,
           command,
         });
+
+        if (!success) {
+          return this.actions.fallback(ctx.params);
+        }
+
+        return true;
       },
     },
     fallback: {
