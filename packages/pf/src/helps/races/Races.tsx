@@ -1,11 +1,11 @@
 import { Box } from "@tau-mud/world/lib/screen";
-import React from "react";
-import { screen, Help } from "@tau-mud/world";
+import { screen, IHelp } from "@tau-mud/world";
 
 const { H1, H2, HelpLink, Text, Ul, Li, B } = screen;
 
-export class Races extends Help {
-  readonly template = () => (
+export const Races: IHelp = {
+  aliases: ["help", "h"],
+  template: () => (
     <Box>
       <H1>Races</H1>
       <H2>Overview</H2>
@@ -80,5 +80,5 @@ export class Races extends Help {
         </Li>
       </Ul>
     </Box>
-  );
-}
+  ),
+};

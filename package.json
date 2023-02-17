@@ -11,11 +11,13 @@
     "packages:watch": "lerna exec --parallel --scope @tau-mud/* -- yarn watch"
   },
   "devDependencies": {
+    "@types/react": "^18.0.28",
     "ioredis": "^5.3.0",
-    "lerna": "^6.4.1",
+    "lerna": "^6.5.1",
     "moleculer-cli": "^0.8.1",
     "nodemon": "^2.0.20",
     "prettier": "^2.8.3",
+    "react": "^18.2.0",
     "typedoc": "^0.23.24",
     "typedoc-github-wiki-theme": "^1.0.1",
     "typedoc-plugin-markdown": "^3.14.0"

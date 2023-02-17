@@ -1,11 +1,10 @@
-import { Box } from "@tau-mud/world/lib/screen";
-import React from "react";
-import { screen, Help } from "@tau-mud/world";
+import { screen, IHelp } from "@tau-mud/world";
 
-const { H1, H2, HelpLink, Text, Ul, Li, B } = screen;
+const { Box, H1, H2, HelpLink, Text, Ul, Li, B } = screen;
 
-export class Gnome extends Help {
-  readonly template = () => (
+export const Gnome: IHelp = {
+  aliases: ["gnome", "gnomes"],
+  template: () => (
     <Box>
       <H1>Gnome</H1>
       <H2>Overview</H2>
@@ -120,5 +119,5 @@ export class Gnome extends Help {
         gnomes.
       </Text>
     </Box>
-  );
-}
+  ),
+};

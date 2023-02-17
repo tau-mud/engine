@@ -1,11 +1,10 @@
-import { Box } from "@tau-mud/world/lib/screen";
-import React from "react";
-import { screen, Help } from "@tau-mud/world";
+import { screen, IHelp } from "@tau-mud/world";
 
-const { H1, H2, HelpLink, Text, Ul, Li, B } = screen;
+const { H1, H2, HelpLink, Text, Ul, Li, B, Box } = screen;
 
-export class HalfOrc extends Help {
-  readonly template = () => (
+export const HalfOrc: IHelp = {
+  aliases: ["half orc", "half orcs"],
+  template: () => (
     <Box>
       <H1>Half-Orc</H1>
       <H2>Overview</H2>
@@ -96,5 +95,5 @@ export class HalfOrc extends Help {
         orcish parentage, or may follow their own spiritual path.
       </Text>
     </Box>
-  );
-}
+  ),
+};

@@ -18,7 +18,8 @@
     "strict": true,
     "target": "es2019",
     "module": "commonjs",
-    "jsx": "react",
-    "sourceMap": true
+    "jsx": "react-jsx",
+    "sourceMap": true,
+    "resolveJsonModule": true,
   },
 }

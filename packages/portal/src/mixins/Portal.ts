@@ -1,4 +1,4 @@
-import Moleculer, {
+import {
   ActionSchema,
   Context,
   Errors,
@@ -6,11 +6,13 @@ import Moleculer, {
   ServiceActionsSchema,
   ServiceBroker,
 } from "moleculer";
+
 import {
   ITauServiceSchema,
   mixins,
   TTauServiceConstructor,
   TTauServiceMixins,
+  VERSION
 } from "@tau-mud/core";
 
 import { get } from "lodash";
@@ -25,8 +27,6 @@ import {
   ISocketActionParams,
   IWriteActionParams,
 } from "moleculer-telnet";
-
-const packageJson = require("../../package.json");
 
 interface IErrorMeta {
   error: boolean;
@@ -70,8 +70,6 @@ interface IPortalActionSchema extends ServiceActionsSchema {
   write: ActionSchema;
   getMetadata: ActionSchema;
   setMetadata: ActionSchema;
-  echoOn: ActionSchema;
-  echoOff: ActionSchema;
 }
 
 /**
@@ -211,7 +209,7 @@ export const Portal: TTauServiceConstructor = (mudSettings) => ({
       },
       async handler(
         this: Service,
-        ctx: Context<IPortalGetMetadataActionParams>
+        _ctx: Context<IPortalGetMetadataActionParams>
       ) {
         throw new Errors.MoleculerError(
           "Not implemented",
@@ -226,7 +224,7 @@ export const Portal: TTauServiceConstructor = (mudSettings) => ({
         id: "string",
         key: "string",
       },
-      async handler(this: Service, ctx: Context<{ id: string; key: string }>) {
+      async handler(this: Service, _ctx: Context<{ id: string; key: string }>) {
         throw new Errors.MoleculerError(
           "Not implemented",
           501,
@@ -255,7 +253,7 @@ export const Portal: TTauServiceConstructor = (mudSettings) => ({
       },
       async handler(
         this: ServiceBroker,
-        ctx: Context<IPortalMergeMetadataActionParams>
+        _ctx: Context<IPortalMergeMetadataActionParams>
       ) {
         throw new Errors.MoleculerError(
           "Not implemented",
@@ -284,7 +282,7 @@ export const Portal: TTauServiceConstructor = (mudSettings) => ({
         async after(this: Service, ctx: Context<IPortalActionParams>) {
           await this.actions.writeLine({
             id: ctx.params.id,
-            data: `Tau MUD Engine v${packageJson.version}`,
+            data: `Tau MUD Engine v${VERSION}`,
           });
 
           await ctx.call("connections.register", {
@@ -434,7 +432,7 @@ export const Portal: TTauServiceConstructor = (mudSettings) => ({
       },
       async handler(
         this: ServiceBroker,
-        ctx: Context<IPortalWriteActionParams>
+        _ctx: Context<IPortalWriteActionParams>
       ) {
         throw new Errors.MoleculerError(
           "Not implemented",

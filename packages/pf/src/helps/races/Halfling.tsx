@@ -1,11 +1,10 @@
-import { Box } from "@tau-mud/world/lib/screen";
-import React from "react";
-import { screen, Help } from "@tau-mud/world";
+import { screen, IHelp } from "@tau-mud/world";
 
-const { H1, H2, HelpLink, Text, Ul, Li, B } = screen;
+const { Box, H1, H2, HelpLink, Text, Ul, Li, B } = screen;
 
-export class Halfling extends Help {
-  readonly template = () => (
+export const Halfing: IHelp = {
+  aliases: ["halflings", "hafling"],
+  template: () => (
     <Box>
       <H1>Halfling</H1>
       <H2>Overview</H2>
@@ -93,5 +92,5 @@ export class Halfling extends Help {
         gods, but are often drawn to deities of nature, community, and family.
       </Text>
     </Box>
-  );
-}
+  ),
+};

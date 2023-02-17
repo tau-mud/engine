@@ -1,11 +1,10 @@
-import React from "react";
-
-import { Help, screen } from "@tau-mud/world";
+import { IHelp, screen } from "@tau-mud/world";
 
 const { Box, HelpLink, H1, H2, Text, Ul, Li, B } = screen;
 
-export class Elf extends Help {
-  readonly template = () => (
+export const Elf: IHelp = {
+  aliases: ["elf", "elves", "elfs"],
+  template: () => (
     <Box>
       <H1>Elf</H1>
       <H2>Overview</H2>
@@ -129,5 +128,5 @@ export class Elf extends Help {
         deities, often those associated with nature, art, and magic.
       </Text>
     </Box>
-  );
-}
+  ),
+};

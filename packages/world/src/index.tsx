@@ -7,4 +7,4 @@ export * as models from "./models";
 export * as services from "./services";
 export * as components from "./components";
 export * from "./IWorldSettings";
-export * from "./Help";
+export * from "./IHelp";

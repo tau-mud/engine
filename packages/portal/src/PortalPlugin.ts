@@ -1,4 +1,4 @@
-import { config, Plugin } from "@tau-mud/core";
+import { Plugin } from "@tau-mud/core";
 import { TelnetPortal } from "./portals";
 import { Connections } from "./services";
 
