@@ -3,17 +3,23 @@ import { IHelpSchema } from "./IHelpSchema";
 import { IHelpSetSchema } from "./IHelpSetSchema";
 
 export class HelpSet {
-  readonly aliases: Array<string> = [];
-  readonly helps: Record<string, IHelpSchema> = {};
+  readonly helps: Record<string, Help> = {};
 
   constructor(schema: IHelpSetSchema) {
-    schema.mixins.forEach((mixin) => {
+    const mixins = schema.mixins || [];
+    mixins.forEach((mixin) => {
       const hs = new HelpSet(mixin);
       Object.values(hs.helps).forEach((help) => {
-        Object.values(help.aliases).forEach((alias) => {
-          this.aliases.push(alias);
-        });
-      });
+        help.aliases.forEach((alias) => {
+          this.helps[alias] = help
+        })
+      })
     });
+
+    Object.values(schema.helps).forEach((help) => {
+      help.aliases.forEach((alias) => {
+        this.helps[alias] = new Help(help);
+      })
+    })
   }
 }
