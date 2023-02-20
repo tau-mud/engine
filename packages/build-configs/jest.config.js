@@ -5,4 +5,5 @@ module.exports = {
       isolatedModules: true,
     },
   },
+  testEnvironment: "node",
 };

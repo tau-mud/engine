@@ -6,5 +6,6 @@ export * as screen from "./screen";
 export * as models from "./models";
 export * as services from "./services";
 export * as components from "./components";
+export * as command from "./command";
+export * as help from "./help";
 export * from "./IWorldSettings";
-export * from "./IHelp";

@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-export interface IHelp {
+export interface IHelpSchema {
   template: FunctionComponent;
   aliases: Array<string>;
 }

@@ -8,6 +8,9 @@
     },
     {
       "path": "../../moleculer-telnet"
+    },
+    {
+      "path": "../packages/world"
     }
   ],
   "settings": {
